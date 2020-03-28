@@ -8,7 +8,6 @@ namespace ConceptMatrix.Services
 	public interface IInjectionService : IService
 	{
 		OffsetsRoot Offsets { get; }
-		IMemory<T> GetMemory<T>(params string[] offsets);
-		string GetBaseAddress(string address);
+		IMemory<T> GetMemory<T>(BaseAddresses baseAddress, params string[] offsets);
 	}
 }

@@ -31,8 +31,8 @@ namespace ConceptMatrix.PoseModule
 
 			this.GenerateBones();
 
-			this.race = injection.GetMemory<int>(injection.Offsets.Character.Race);
-			this.tailType = injection.GetMemory<int>(injection.Offsets.Character.TailType);
+			this.race = injection.GetMemory<int>(Offsets.BaseAddresses.GPose, injection.Offsets.Character.Race);
+			this.tailType = injection.GetMemory<int>(Offsets.BaseAddresses.GPose, injection.Offsets.Character.TailType);
 		}
 
 		#pragma warning disable CS0067

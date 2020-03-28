@@ -29,9 +29,8 @@ namespace ConceptMatrix.PoseModule
 			if (property == null)
 				throw new Exception("Failed to get bone axis: \"" + propertyName + "\"");
 
-			string baseAddress = injection.GetBaseAddress(injection.Offsets.GposeOffset);
 			string boneOffset = (string)property.GetValue(injection.Offsets.Character.Body.Bones);
-			this.rotationMemory = injection.GetMemory<Quaternion>(baseAddress, injection.Offsets.Character.Body.Base, boneOffset);
+			this.rotationMemory = injection.GetMemory<Quaternion>(Offsets.BaseAddresses.GPose, injection.Offsets.Character.Body.Base, boneOffset);
 		}
 
 		#pragma warning disable CS0067

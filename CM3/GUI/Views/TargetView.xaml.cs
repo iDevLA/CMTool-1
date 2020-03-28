@@ -7,6 +7,7 @@ namespace ConceptMatrix.GUI.Views
 	using System.Threading.Tasks;
 	using System.Windows;
 	using System.Windows.Controls;
+	using ConceptMatrix.Offsets;
 	using ConceptMatrix.Services;
 
 	/// <summary>
@@ -29,11 +30,9 @@ namespace ConceptMatrix.GUI.Views
 				while (!App.Services.IsStarted)
 					await Task.Delay(100);
 
-				////var addr = GAS(MemoryManager.Add(MemoryManager.Instance.GposeEntityOffset, ((i + 1) * 8).ToString("X")), c.Name);
-
 				IInjectionService injection = App.Services.Get<IInjectionService>();
-				string baseAddr = injection.GetBaseAddress(injection.Offsets.GposeEntityOffset);
-				IMemory<string> name = injection.GetMemory<string>(baseAddr, injection.Offsets.Character.Name);
+
+				IMemory<string> name = injection.GetMemory<string>(BaseAddresses.GPose, injection.Offsets.Character.Name);
 
 				while (true)
 				{

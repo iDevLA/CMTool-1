@@ -7,3 +7,5 @@ packages/
 ConceptMatrixUpdater/bin/
 lib/SaintCoinach
 *.user
+\obj\
+\bin\

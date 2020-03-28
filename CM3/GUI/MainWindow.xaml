@@ -12,7 +12,19 @@
 			<RowDefinition Height="Auto"/>
 		</Grid.RowDefinitions>
 
-		<Label x:Name="LogDisplay" Grid.Row="1"/>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="150"/>
+			<ColumnDefinition/>
+		</Grid.ColumnDefinitions>
+
+		<Label 
+			x:Name="LogDisplay"
+			Grid.Row="1" 
+			Grid.ColumnSpan="2"/>
+
+		<ListBox x:Name="ViewList" SelectionChanged="OnSelectionChanged"/>
+
+		<ScrollViewer Grid.Row="0" Grid.Column="1" x:Name="ViewArea"/>
 
 	</Grid>
 </Window>

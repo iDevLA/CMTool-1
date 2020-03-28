@@ -33,6 +33,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Injection", "CM3\Injection\Injection.csproj", "{DFFE428F-766C-4DBC-90E4-C3522C21E60F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUI", "CM3\GUI\GUI.csproj", "{3DDA589A-BEF9-4D9C-8A1E-5DABDCB41741}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4A174AFE-F311-4B69-92A0-E3D6607199E1} = {4A174AFE-F311-4B69-92A0-E3D6607199E1}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "CM3\Core\Core.csproj", "{1C35C6FF-E727-4840-B842-230E002DB02F}"
 EndProject

@@ -8,15 +8,18 @@ namespace ConceptMatrix.PoseModule
 	using ConceptMatrix;
 	using ConceptMatrix.Modules;
 
-	public class PoseModule : IModule
+	public class PoseModule : ModuleBase
 	{
-		public Task Initialize()
+		public override Task Initialize()
 		{
 			Log.Write("Hello!", "Pose Module");
+
+			this.AddView<PoseView>("Pose");
+
 			return Task.CompletedTask;
 		}
 
-		public Task Shutdown()
+		public override Task Shutdown()
 		{
 			return Task.CompletedTask;
 		}

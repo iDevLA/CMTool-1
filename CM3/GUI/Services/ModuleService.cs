@@ -10,9 +10,13 @@ namespace ConceptMatrix.GUI.Services
 	using System.Threading.Tasks;
 	using ConceptMatrix.Modules;
 
+	using static ConceptMatrix.Modules.ModuleBase;
+
 	public class ModuleService : ServiceBase
 	{
-		private List<IModule> modules = new List<IModule>();
+		private List<ModuleBase> modules = new List<ModuleBase>();
+
+		public static event ViewEvent AddView;
 
 		public override Task Initialize()
 		{
@@ -48,9 +52,10 @@ namespace ConceptMatrix.GUI.Services
 					if (type.IsAbstract || type.IsInterface)
 						continue;
 
-					if (typeof(IModule).IsAssignableFrom(type))
+					if (typeof(ModuleBase).IsAssignableFrom(type))
 					{
-						IModule module = (IModule)Activator.CreateInstance(type);
+						ModuleBase module = (ModuleBase)Activator.CreateInstance(type);
+						module.AddModuleView += this.OnAddModuleView;
 						await module.Initialize();
 					}
 				}
@@ -63,10 +68,16 @@ namespace ConceptMatrix.GUI.Services
 
 		private async Task ShutdownModules()
 		{
-			foreach (IModule module in this.modules)
+			foreach (ModuleBase module in this.modules)
 			{
+				module.AddModuleView -= this.OnAddModuleView;
 				await module.Shutdown();
 			}
+		}
+
+		private void OnAddModuleView(string path, Type view)
+		{
+			AddView?.Invoke(path, view);
 		}
 	}
 }

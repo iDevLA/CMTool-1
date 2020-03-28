@@ -51,11 +51,17 @@ namespace ConceptMatrix.PoseModule
 
 		private void OnApplicationExiting(object sender, ExitEventArgs e)
 		{
+			if (this.ViewModel == null)
+				return;
+
 			this.ViewModel.IsEnabled = false;
 		}
 
 		private void OnUnloaded(object sender, RoutedEventArgs e)
 		{
+			if (this.ViewModel == null)
+				return;
+
 			this.ViewModel.IsEnabled = false;
 		}
 	}

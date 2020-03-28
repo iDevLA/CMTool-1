@@ -86,14 +86,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="PoseView.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Compile Include="PoseView.xaml.cs">
-      <DependentUpon>PoseView.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
     <Page Include="SimplePoseBoneView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

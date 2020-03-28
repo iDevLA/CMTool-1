@@ -14,7 +14,7 @@ namespace ConceptMatrix.PoseModule
 		{
 			Log.Write("Hello!", "Pose Module");
 
-			this.AddView<PoseView>("Pose");
+			this.AddView<SimplePoseView>("Pose");
 
 			return Task.CompletedTask;
 		}

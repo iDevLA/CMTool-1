@@ -128,6 +128,10 @@
       <Project>{849A5202-58F0-47CA-A7BC-46EAD222B3EF}</Project>
       <Name>Offsets</Name>
     </ProjectReference>
+    <ProjectReference Include="..\ThreeD\ThreeD.csproj">
+      <Project>{57b50980-3643-4d41-a8ac-045646da7310}</Project>
+      <Name>ThreeD</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

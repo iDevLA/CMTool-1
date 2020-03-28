@@ -59,8 +59,15 @@ namespace ConceptMatrix.GUI
 			string path = (string)this.ViewList.SelectedItem;
 			Type viewType = this.views[path];
 
-			this.currentView = (UserControl)Activator.CreateInstance(viewType);
-			this.ViewArea.Content = this.currentView;
+			try
+			{
+				this.currentView = (UserControl)Activator.CreateInstance(viewType);
+				this.ViewArea.Content = this.currentView;
+			}
+			catch (Exception ex)
+			{
+				Log.Write(new Exception($"Failed to create view: {viewType}", ex));
+			}
 		}
 	}
 }

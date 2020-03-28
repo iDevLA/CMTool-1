@@ -13,7 +13,7 @@ namespace ConceptMatrix.GUI
 	/// </summary>
 	public partial class App : Application
 	{
-		private ServiceManager serviceManager = new ServiceManager();
+		private static ServiceManager serviceManager = new ServiceManager();
 
 		public App()
 		{
@@ -23,7 +23,15 @@ namespace ConceptMatrix.GUI
 			this.MainWindow = new ConceptMatrix.GUI.MainWindow();
 			this.MainWindow.Show();
 
-			Task.Run(this.serviceManager.InitializeServices);
+			Task.Run(serviceManager.InitializeServices);
+		}
+
+		public static ServiceManager Services
+		{
+			get
+			{
+				return serviceManager;
+			}
 		}
 
 		private void OnError(Exception ex, string category)
@@ -41,7 +49,7 @@ namespace ConceptMatrix.GUI
 
 		private void OnAppExit(object sender, ExitEventArgs e)
 		{
-			Task t = this.serviceManager.ShutdownServices();
+			Task t = serviceManager.ShutdownServices();
 			t.Wait();
 		}
 	}

@@ -5,6 +5,7 @@ namespace ConceptMatrix.GUI.Services
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Diagnostics;
 	using System.Reflection;
 	using System.Threading.Tasks;
 	using ConceptMatrix;
@@ -53,10 +54,17 @@ namespace ConceptMatrix.GUI.Services
 
 			this.process = new ProcessInjection();
 
-			// TODO: Get process
-			////this.process.OpenProcess();
+			// TODO: allow for process selection
+			try
+			{
+				this.process.OpenProcess("ffxiv_dx11");
+			}
+			catch (Exception ex)
+			{
+				throw new Exception("Failed to find FFXIV process", ex);
+			}
 
-			// TODO: Get region
+			// TODO: allow for region selection
 			this.Offsets = OffsetsManager.LoadSettings(OffsetsManager.Regions.Live);
 
 			return Task.CompletedTask;

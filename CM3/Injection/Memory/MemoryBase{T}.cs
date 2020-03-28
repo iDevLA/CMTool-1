@@ -5,7 +5,7 @@ namespace ConceptMatrix.Injection.Memory
 {
 	using System;
 
-	public abstract class MemoryBase<T> : MemoryBase
+	public abstract class MemoryBase<T> : MemoryBase, IMemory<T>
 	{
 		public MemoryBase(ProcessInjection process, UIntPtr address)
 			: base(process, address)

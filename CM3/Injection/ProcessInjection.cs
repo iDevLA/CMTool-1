@@ -26,6 +26,21 @@ namespace ConceptMatrix.Injection
 			private set;
 		}
 
+		public void OpenProcess(string contains)
+		{
+			Process[] processlist = Process.GetProcesses();
+			foreach (Process process in processlist)
+			{
+				if (process.ProcessName.ToLower().Contains(contains))
+				{
+					this.OpenProcess(process.Id);
+					return;
+				}
+			}
+
+			throw new Exception($"Failed to find process containing: \"{contains}\"");
+		}
+
 		/// <summary>
 		/// Open the PC game process with all security and access rights.
 		/// </summary>

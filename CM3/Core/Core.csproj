@@ -27,7 +27,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Injection\Injection.csproj" />
 	  <ProjectReference Include="..\Offsets\Offsets.csproj" />
 	</ItemGroup>
 

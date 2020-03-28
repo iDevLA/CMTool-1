@@ -12,12 +12,23 @@ namespace ConceptMatrix.GUI
 	public class ServiceManager : IServices
 	{
 		private List<IService> services = new List<IService>();
-		private bool isStarted = false;
+
+		public bool IsInitialized { get; private set; } = false;
+		public bool IsStarted { get; private set; } = false;
 
 		public T Get<T>()
 			where T : IService
 		{
-			throw new NotImplementedException();
+			// TODO: cache these for faster lookups
+			foreach (IService service in this.services)
+			{
+				if (typeof(T).IsAssignableFrom(service.GetType()))
+				{
+					return (T)service;
+				}
+			}
+
+			throw new Exception($"Failed to find service: {typeof(T)}");
 		}
 
 		public async Task AddService<T>()
@@ -31,7 +42,7 @@ namespace ConceptMatrix.GUI
 				await service.Initialize(this);
 
 				// If we've already started, and this service is being added late (possibly by a module from its start method) start the service immediately.
-				if (this.isStarted)
+				if (this.IsStarted)
 				{
 					await service.Start();
 				}
@@ -47,7 +58,10 @@ namespace ConceptMatrix.GUI
 			await this.AddService<InjectionService>();
 			await this.AddService<ModuleService>();
 
+			this.IsInitialized = true;
 			Log.Write($"Services Initialized", "Services");
+
+			await this.StartServices();
 		}
 
 		public async Task StartServices()
@@ -59,7 +73,7 @@ namespace ConceptMatrix.GUI
 				await service.Start();
 			}
 
-			this.isStarted = true;
+			this.IsStarted = true;
 			Log.Write($"Services Started", "Services");
 		}
 

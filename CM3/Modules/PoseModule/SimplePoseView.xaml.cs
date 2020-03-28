@@ -49,14 +49,14 @@ namespace ConceptMatrix.PoseModule
 			}
 		}
 
-		private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+		/*private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
 		{
 			if (this.DataContext is CharacterDetails details)
 			{
 				this.ViewModel = new SimplePoseViewModel(details);
 				this.ContentArea.DataContext = this.ViewModel;
 			}
-		}
+		}*/
 
 		private void OnApplicationExiting(object sender, ExitEventArgs e)
 		{

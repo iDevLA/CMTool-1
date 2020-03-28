@@ -16,7 +16,7 @@ namespace ConceptMatrix.PoseModule
 	/// </summary>
 	public partial class SimplePoseBoneView : UserControl
 	{
-		public static readonly DependencyProperty BoneNameProperty = DependencyProperty.Register("BoneName", typeof(string), typeof(SimplePoseBoneView));
+		public static readonly DependencyProperty BoneNameProperty = DependencyProperty.Register(nameof(BoneName), typeof(string), typeof(SimplePoseBoneView));
 
 		private static Dictionary<Bone, List<SimplePoseBoneView>> boneViews = new Dictionary<Bone, List<SimplePoseBoneView>>();
 

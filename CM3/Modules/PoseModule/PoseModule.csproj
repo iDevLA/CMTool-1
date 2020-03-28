@@ -64,6 +64,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bone.cs" />
+    <Compile Include="Controls\NumberBox.xaml.cs">
+      <DependentUpon>NumberBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\QuaternionEditor.xaml.cs">
+      <DependentUpon>QuaternionEditor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SimplePoseBoneView.xaml.cs">
       <DependentUpon>SimplePoseBoneView.xaml</DependentUpon>
     </Compile>
@@ -71,6 +77,14 @@
       <DependentUpon>SimplePoseView.xaml</DependentUpon>
     </Compile>
     <Compile Include="SimplePoseViewModel.cs" />
+    <Page Include="Controls\NumberBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\QuaternionEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="PoseView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -123,6 +137,11 @@
     <ProjectReference Include="..\..\Injection\Injection.csproj">
       <Project>{DFFE428F-766C-4DBC-90E4-C3522C21E60F}</Project>
       <Name>Injection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\ThreeD\ThreeD.csproj">
+      <Project>{57B50980-3643-4D41-A8AC-045646DA7310}</Project>
+      <Name>ThreeD</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

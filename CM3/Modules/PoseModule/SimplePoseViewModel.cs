@@ -10,23 +10,34 @@ namespace ConceptMatrix.PoseModule
 	using System.Threading;
 	using System.Windows;
 	using System.Windows.Media.Media3D;
+	using ConceptMatrix;
+	using ConceptMatrix.Services;
 	using PropertyChanged;
 
 	public class SimplePoseViewModel : INotifyPropertyChanged
 	{
+		private static IInjectionService injection;
+
 		private Dictionary<string, Bone> bones;
 		private Bone currentBone;
 		private bool enabled;
 
-		public event PropertyChangedEventHandler PropertyChanged;
-
-		public CharacterDetails Character { get; set; }
+		private IMemory<int> race;
+		private IMemory<int> tailType;
 
 		public SimplePoseViewModel()
 		{
-			this.Character = character;
+			injection = Module.Services.Get<IInjectionService>();
+
 			this.GenerateBones();
+
+			this.race = injection.GetMemory<int>(injection.Offsets.Character.Race);
+			this.tailType = injection.GetMemory<int>(injection.Offsets.Character.TailType);
 		}
+
+		#pragma warning disable CS0067
+		public event PropertyChangedEventHandler PropertyChanged;
+		#pragma warning restore
 
 		public bool IsEnabled
 		{
@@ -40,7 +51,7 @@ namespace ConceptMatrix.PoseModule
 				this.CurrentBone = null;
 				this.enabled = value;
 
-				MemoryManager mem = MemoryManager.Instance;
+				/*MemoryManager mem = MemoryManager.Instance;
 
 				// Not sure I want both simple pose and pose matrix trying to edit bones at the same time.
 				////CharacterDetails.BoneEditMode = this.enabled;
@@ -64,7 +75,7 @@ namespace ConceptMatrix.PoseModule
 					mem.MemLib.writeMemory(mem.SkeletonAddress3, "bytes", "0x0F 0x29 0x5E 0x10");
 					mem.MemLib.writeMemory(mem.PhysicsAddress, "bytes", "0x0F 0x29 0x48 0x10");
 					mem.MemLib.writeMemory(mem.PhysicsAddress2, "bytes", "0x0F 0x29 0x00");
-				}
+				}*/
 			}
 		}
 
@@ -106,91 +117,62 @@ namespace ConceptMatrix.PoseModule
 			set;
 		}
 
-		[DependsOn(nameof(Character))]
 		public bool HasTail
 		{
 			get
 			{
-				if (this.Character == null)
-					return false;
-
-				return this.Character.Race.value == 4 || this.Character.Race.value == 6 || this.Character.Race.value == 7;
+				return this.race.Get() == 4 || this.race.Get() == 6 || this.race.Get() == 7;
 			}
 		}
 
-		[DependsOn(nameof(Character))]
 		public bool IsViera
 		{
 			get
 			{
-				if (this.Character == null)
-					return false;
-
-				return this.Character.Race.value == 8;
+				return this.race.Get() == 8;
 			}
 		}
 
-		[DependsOn(nameof(Character))]
 		public bool IsVieraEars01
 		{
 			get
 			{
-				if (this.Character == null)
-					return false;
-
-				return this.Character.Race.value == 8 && this.Character.TailType.value <= 1;
+				return this.race.Get() == 8 && this.tailType.Get() <= 1;
 			}
 		}
 
-		[DependsOn(nameof(Character))]
 		public bool IsVieraEars02
 		{
 			get
 			{
-				if (this.Character == null)
-					return false;
-
-				return this.Character.Race.value == 8 && this.Character.TailType.value == 2;
+				return this.race.Get() == 8 && this.tailType.Get() == 2;
 			}
 		}
 
-		[DependsOn(nameof(Character))]
 		public bool IsVieraEars03
 		{
 			get
 			{
-				if (this.Character == null)
-					return false;
-
-				return this.Character.Race.value == 8 && this.Character.TailType.value == 3;
+				return this.race.Get() == 8 && this.tailType.Get() == 3;
 			}
 		}
 
-		[DependsOn(nameof(Character))]
 		public bool IsVieraEars04
 		{
 			get
 			{
-				if (this.Character == null)
-					return false;
-
-				return this.Character.Race.value == 8 && this.Character.TailType.value == 4;
+				return this.race.Get() == 8 && this.tailType.Get() == 4;
 			}
 		}
 
-		[DependsOn(nameof(Character))]
 		public bool IsHrothgar
 		{
 			get
 			{
-				if (this.Character == null)
-					return false;
-
-				return this.Character.Race.value == 7;
+				return this.race.Get() == 7;
 			}
 		}
 
-		[DependsOn(nameof(Character))]
 		public IEnumerable<Bone> Bones
 		{
 			get
@@ -212,21 +194,6 @@ namespace ConceptMatrix.PoseModule
 			}
 
 			return name;
-		}
-
-		public void Refresh()
-		{
-			this.GenerateBones();
-
-			this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Character)));
-			this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.Bones)));
-			this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.HasTail)));
-			this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.IsViera)));
-			this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.IsVieraEars01)));
-			this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.IsVieraEars02)));
-			this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.IsVieraEars03)));
-			this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.IsVieraEars04)));
-			this.PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(this.IsHrothgar)));
 		}
 
 		public bool GetIsBoneSelected(Bone bone)
@@ -280,8 +247,8 @@ namespace ConceptMatrix.PoseModule
 		private void GenerateBones()
 		{
 			this.bones = new Dictionary<string, Bone>();
-			CharacterOffsets c = Settings.Instance.Character;
-			PropertyInfo[] boneProperties = typeof(BonesOffsets).GetProperties();
+			Offsets.Character c = injection.Offsets.Character;
+			PropertyInfo[] boneProperties = typeof(Offsets.Bones).GetProperties();
 			foreach (PropertyInfo boneProperty in boneProperties)
 			{
 				if (!boneProperty.Name.Contains("_X"))
@@ -521,23 +488,7 @@ namespace ConceptMatrix.PoseModule
 			child.Parent = parent;
 		}
 
-		// Get the bone address string from the Settings.Instance.Character.Body.Bones lookup.
-		private static string GetAddressString(string boneName)
-		{
-			Mem mem = MemoryManager.Instance.MemLib;
-			CharacterOffsets c = Settings.Instance.Character;
-
-			string propertyName = boneName + "_X";
-			PropertyInfo property = c.Body.Bones.GetType().GetProperty(propertyName);
-
-			if (property == null)
-				throw new Exception("Failed to get bone axis: \"" + propertyName + "\"");
-
-			string offsetString = (string)property.GetValue(c.Body.Bones);
-			return MemoryManager.GetAddressString(CharacterDetailsViewModel.baseAddr, c.Body.Base, offsetString);
-		}
-
-		private void WatchCamera()
+		/*private void WatchCamera()
 		{
 			string addressStr = MemoryManager.GetAddressString(MemoryManager.Instance.CameraAddress, Settings.Instance.Character.CamAngleX);
 			UIntPtr address = MemoryManager.Instance.MemLib.get64bitCode(addressStr);
@@ -572,6 +523,6 @@ namespace ConceptMatrix.PoseModule
 
 				Thread.Sleep(32);
 			}
-		}
+		}*/
 	}
 }

@@ -9,26 +9,35 @@ namespace ConceptMatrix.GUI.Services
 	using System.Reflection;
 	using System.Threading.Tasks;
 	using ConceptMatrix.Modules;
+	using ConceptMatrix.Services;
 
 	using static ConceptMatrix.Modules.ModuleBase;
 
-	public class ModuleService : ServiceBase
+	public class ModuleService : IService
 	{
 		private List<ModuleBase> modules = new List<ModuleBase>();
 
 		public static event ViewEvent AddView;
 
-		public override Task Initialize()
+		public Task Initialize(IServices services)
 		{
-			return this.InitializeModules("./Modules/");
+			return this.InitializeModules("./Modules/", services);
 		}
 
-		public override Task Shutdown()
+		public async Task Start()
+		{
+			foreach (ModuleBase module in this.modules)
+			{
+				await module.Start();
+			}
+		}
+
+		public Task Shutdown()
 		{
 			return this.ShutdownModules();
 		}
 
-		private async Task InitializeModules(string directory)
+		private async Task InitializeModules(string directory, IServices services)
 		{
 			if (!Directory.Exists(directory))
 				Directory.CreateDirectory(directory);
@@ -39,11 +48,11 @@ namespace ConceptMatrix.GUI.Services
 			foreach (FileInfo assemblyInfo in assemblies)
 			{
 				Assembly assembly = Assembly.LoadFrom(assemblyInfo.FullName);
-				await this.InitializeModules(assembly);
+				await this.InitializeModules(assembly, services);
 			}
 		}
 
-		private async Task InitializeModules(Assembly targetAssembly)
+		private async Task InitializeModules(Assembly targetAssembly, IServices services)
 		{
 			try
 			{
@@ -56,7 +65,7 @@ namespace ConceptMatrix.GUI.Services
 					{
 						ModuleBase module = (ModuleBase)Activator.CreateInstance(type);
 						module.AddModuleView += this.OnAddModuleView;
-						await module.Initialize();
+						await module.Initialize(services);
 					}
 				}
 			}

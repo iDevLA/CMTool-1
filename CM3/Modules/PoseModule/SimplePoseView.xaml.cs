@@ -16,22 +16,13 @@ namespace ConceptMatrix.PoseModule
 		{
 			this.InitializeComponent();
 			Application.Current.Exit += this.OnApplicationExiting;
+
+			ThreadStart ts = new ThreadStart(this.PollChanges);
+			Thread th = new Thread(ts);
+			th.Start();
 		}
 
 		public SimplePoseViewModel ViewModel { get; set; }
-
-		private void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-		{
-			if (this.IsVisible)
-			{
-				if (this.ViewModel != null)
-					this.ViewModel.Refresh();
-
-				ThreadStart ts = new ThreadStart(this.PollChanges);
-				Thread th = new Thread(ts);
-				th.Start();
-			}
-		}
 
 		private void PollChanges()
 		{

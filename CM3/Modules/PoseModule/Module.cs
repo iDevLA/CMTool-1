@@ -8,9 +8,9 @@ namespace ConceptMatrix.PoseModule
 	using ConceptMatrix;
 	using ConceptMatrix.Modules;
 
-	public class PoseModule : ModuleBase
+	public class Module : ModuleBase
 	{
-		public override Task Initialize()
+		public override Task Initialize(IServices services)
 		{
 			Log.Write("Hello!", "Pose Module");
 

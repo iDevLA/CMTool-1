@@ -4,18 +4,16 @@
 namespace ConceptMatrix.GUI
 {
 	using System;
-	using System.Collections.Generic;
 	using System.Threading.Tasks;
 	using System.Windows;
 	using ConceptMatrix;
-	using ConceptMatrix.GUI.Services;
 
 	/// <summary>
 	/// Interaction logic for App.xaml.
 	/// </summary>
 	public partial class App : Application
 	{
-		private static List<ServiceBase> services = new List<ServiceBase>();
+		private ServiceManager serviceManager = new ServiceManager();
 
 		public App()
 		{
@@ -25,23 +23,7 @@ namespace ConceptMatrix.GUI
 			this.MainWindow = new ConceptMatrix.GUI.MainWindow();
 			this.MainWindow.Show();
 
-			Task.Run(this.InitializeServices);
-		}
-
-		public static async Task AddService<T>()
-			where T : ServiceBase, new()
-		{
-			try
-			{
-				Log.Write($"Adding service: {typeof(T).Name}", "Application");
-				ServiceBase service = Activator.CreateInstance<T>();
-				services.Add(service);
-				await service.Initialize();
-			}
-			catch (Exception ex)
-			{
-				Log.Write(new Exception($"Failed to initialize service: {typeof(T).Name}", ex));
-			}
+			Task.Run(this.serviceManager.InitializeServices);
 		}
 
 		private void OnError(Exception ex, string category)
@@ -59,24 +41,8 @@ namespace ConceptMatrix.GUI
 
 		private void OnAppExit(object sender, ExitEventArgs e)
 		{
-			Task t = this.ShutdownServices();
+			Task t = this.serviceManager.ShutdownServices();
 			t.Wait();
-		}
-
-		private async Task InitializeServices()
-		{
-			await App.AddService<InjectionService>();
-			await App.AddService<ModuleService>();
-
-			Log.Write($"Services Initialized", "Application");
-		}
-
-		private async Task ShutdownServices()
-		{
-			foreach (ServiceBase service in services)
-			{
-				await service.Shutdown();
-			}
 		}
 	}
 }

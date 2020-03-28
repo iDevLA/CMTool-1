@@ -63,9 +63,9 @@
     <Compile Include="ErrorDialog.xaml.cs">
       <DependentUpon>ErrorDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ServiceManager.cs" />
     <Compile Include="Services\InjectionService.cs" />
     <Compile Include="Services\ModuleService.cs" />
-    <Compile Include="Services\ServiceBase.cs" />
     <Page Include="ErrorDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -119,6 +119,10 @@
     <ProjectReference Include="..\Core\Core.csproj">
       <Project>{1C35C6FF-E727-4840-B842-230E002DB02F}</Project>
       <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Injection\Injection.csproj">
+      <Project>{DFFE428F-766C-4DBC-90E4-C3522C21E60F}</Project>
+      <Name>Injection</Name>
     </ProjectReference>
     <ProjectReference Include="..\Offsets\Offsets.csproj">
       <Project>{849A5202-58F0-47CA-A7BC-46EAD222B3EF}</Project>

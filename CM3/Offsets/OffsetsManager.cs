@@ -6,7 +6,6 @@ namespace ConceptMatrix.Offsets
 	using System;
 	using System.IO;
 	using System.Net;
-	using System.Xml;
 	using System.Xml.Serialization;
 
 	public static class OffsetsManager
@@ -18,12 +17,12 @@ namespace ConceptMatrix.Offsets
 			Korea,
 		}
 
-		public static Root LoadSettings(Regions region)
+		public static OffsetsRoot LoadSettings(Regions region)
 		{
 			string localPath = GetLocalPath(region);
 			string remotePath = GetRemotePath(region);
 
-			Root? currentSettings = null;
+			OffsetsRoot? currentSettings = null;
 			if (File.Exists(localPath))
 			{
 				using (StreamReader reader = new StreamReader(localPath))
@@ -42,14 +41,13 @@ namespace ConceptMatrix.Offsets
 					xmlStr = client.DownloadString(remotePath);
 				}
 
-				Root newSettings = Deserialize(new StringReader(xmlStr));
+				OffsetsRoot newSettings = Deserialize(new StringReader(xmlStr));
 
 				// newer settings, save them.
 				if (currentSettings == null || currentSettings.Value.LastUpdated != newSettings.LastUpdated)
 				{
 					File.WriteAllText(localPath, xmlStr);
 					currentSettings = newSettings;
-					Log.Write("Updated offsets", "Offsets");
 				}
 			}
 			catch (Exception ex)
@@ -60,18 +58,18 @@ namespace ConceptMatrix.Offsets
 			if (currentSettings == null)
 				throw new Exception("Failed to load offset settings.");
 
-			return (Root)currentSettings;
+			return (OffsetsRoot)currentSettings;
 		}
 
-		private static Root Deserialize(TextReader reader)
+		private static OffsetsRoot Deserialize(TextReader reader)
 		{
-			XmlSerializer serializer = new XmlSerializer(typeof(Root), string.Empty);
+			XmlSerializer serializer = new XmlSerializer(typeof(OffsetsRoot), string.Empty);
 			XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
 			ns.Add(string.Empty, string.Empty);
 
 			try
 			{
-				return (Root)serializer.Deserialize(reader);
+				return (OffsetsRoot)serializer.Deserialize(reader);
 			}
 			catch (Exception ex)
 			{

@@ -31,7 +31,7 @@ namespace ConceptMatrix.PoseModule.Controls
 		public QuaternionEditor()
 		{
 			this.InitializeComponent();
-			this.Content.DataContext = this;
+			this.ContentArea.DataContext = this;
 
 			this.TickFrequency = 0.5;
 

@@ -3,23 +3,96 @@
 
 namespace ConceptMatrix.GUI.Services
 {
+	using System;
+	using System.Collections.Generic;
+	using System.Reflection;
 	using System.Threading.Tasks;
+	using ConceptMatrix;
+	using ConceptMatrix.Injection;
+	using ConceptMatrix.Injection.Memory;
 	using ConceptMatrix.Offsets;
+	using ConceptMatrix.Services;
 
-	public class InjectionService : ServiceBase
+	public class InjectionService : IInjectionService
 	{
-		private Root offsets;
+		private ProcessInjection process;
 
-		public override Task Initialize()
+		private Dictionary<Type, Type> memoryTypeLookup = new Dictionary<Type, Type>();
+
+		public OffsetsRoot Offsets
 		{
-			this.offsets = OffsetsManager.LoadSettings(OffsetsManager.Regions.Live);
+			get;
+			private set;
+		}
+
+		public Task Initialize(IServices services)
+		{
+			this.memoryTypeLookup.Clear();
+
+			// Gets all Memory types (Like IntMemory, FloatMemory) and puts them in the lookup
+			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
+			{
+				foreach (Type type in asm.GetTypes())
+				{
+					if (type.IsAbstract || type.IsInterface)
+						continue;
+
+					if (typeof(MemoryBase).IsAssignableFrom(type))
+					{
+						if (type.BaseType.IsGenericType)
+						{
+							Type[] generics = type.BaseType.GetGenericArguments();
+							if (generics.Length == 1)
+							{
+								this.memoryTypeLookup.Add(generics[0], type);
+							}
+						}
+					}
+				}
+			}
+
+			this.process = new ProcessInjection();
+
+			// TODO: Get process
+			////this.process.OpenProcess();
+
+			// TODO: Get region
+			this.Offsets = OffsetsManager.LoadSettings(OffsetsManager.Regions.Live);
 
 			return Task.CompletedTask;
 		}
 
-		public override Task Shutdown()
+		public Task Start()
 		{
 			return Task.CompletedTask;
+		}
+
+		public Task Shutdown()
+		{
+			return Task.CompletedTask;
+		}
+
+		public IMemory<T> GetMemory<T>(params string[] offsets)
+		{
+			UIntPtr address = this.process.GetAddress(offsets);
+
+			Type wrapperType = this.GetMemoryType(typeof(T));
+			IMemory<T> memory = (IMemory<T>)Activator.CreateInstance(wrapperType, this.process, address);
+
+			return memory;
+		}
+
+		public string GetBaseAddress(string address)
+		{
+			return this.process.GetBaseAddress(address);
+		}
+
+		private Type GetMemoryType(Type type)
+		{
+			if (!this.memoryTypeLookup.ContainsKey(type))
+				throw new Exception($"No memory wrapper for type: {type}");
+
+			return this.memoryTypeLookup[type];
 		}
 	}
 }

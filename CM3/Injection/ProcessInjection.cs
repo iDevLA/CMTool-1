@@ -71,16 +71,18 @@ namespace ConceptMatrix.Injection
 			Debug.WriteLine($"Attached to process: {pid}");
 		}
 
-		/// <summary>
-		/// Creates a memory wrapper for the given offsets.
-		/// </summary>
-		public T GetMemory<T>(params string[] offsets)
-			where T : MemoryBase
+		public UIntPtr GetAddress(params string[] offsets)
 		{
 			string offset = GetOffset(offsets);
-			UIntPtr address = this.GetAddress(offset);
+			return this.GetAddress(offset);
+		}
 
-			return (T)Activator.CreateInstance(typeof(T), this, address);
+		public string GetBaseAddress(string offset)
+		{
+			// this is a little weird, but its how it worked in CM2, so lets not mess with it.
+			long offsetL = int.Parse(offset, NumberStyles.HexNumber);
+			long value = this.process.MainModule.BaseAddress.ToInt64() + offsetL;
+			return value.ToString("X");
 		}
 
 		[DllImport("kernel32.dll", SetLastError = true)]

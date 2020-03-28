@@ -228,6 +228,7 @@ namespace ConceptMatrix.ThreeD
 		///     'transform'.
 		/// </summary>
 		/// <param name="bounds">The AABB to transform.</param>
+		/// <param name="transform">the transform.</param>
 		/// <returns>Transformed AABB.</returns>
 		public static Rect3D TransformBounds(Rect3D bounds, Matrix3D transform)
 		{

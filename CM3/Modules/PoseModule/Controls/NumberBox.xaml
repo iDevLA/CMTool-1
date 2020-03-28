@@ -3,10 +3,10 @@
 			 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 			 xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
 			 xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-			 xmlns:local="clr-namespace:ConceptMatrix.Controls"
+			 xmlns:local="clr-namespace:ConceptMatrix.PoseModule.Controls"
 			 mc:Ignorable="d" 
 			 d:DesignWidth="128">
-	<Grid x:Name="Content">
+	<Grid x:Name="ContentArea">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition/>
 			<ColumnDefinition Width="50"/>
@@ -30,7 +30,6 @@
 			Grid.Column="1"
 			Text="{Binding Text, UpdateSourceTrigger=PropertyChanged, FallbackValue=000.00}"
 			Margin="3"
-			Style="{StaticResource MaterialDesignTextBox}"
 			LostFocus="OnLostFocus"
 			LostKeyboardFocus="OnLostFocus"/>
 		

@@ -6,22 +6,37 @@ namespace ConceptMatrix.PoseModule
 	using System;
 	using System.Collections.Generic;
 	using System.ComponentModel;
+	using System.Reflection;
 	using System.Windows.Media.Media3D;
-	using ConceptMatrix.Injection.Memory;
+	using ConceptMatrix.Services;
 
 	public class Bone : INotifyPropertyChanged
 	{
 		public List<Bone> Children = new List<Bone>();
 		public Bone Parent;
 
-		private QuaternionMemory rotationMemory;
+		private IMemory<Quaternion> rotationMemory;
 
 		public Bone(string boneName)
 		{
 			this.BoneName = boneName;
+
+			IInjectionService injection = Module.Services.Get<IInjectionService>();
+
+			string propertyName = boneName + "_X";
+			PropertyInfo property = typeof(Offsets.Bones).GetProperty(propertyName);
+
+			if (property == null)
+				throw new Exception("Failed to get bone axis: \"" + propertyName + "\"");
+
+			string baseAddress = injection.GetBaseAddress(injection.Offsets.GposeOffset);
+			string boneOffset = (string)property.GetValue(injection.Offsets.Character.Body.Bones);
+			this.rotationMemory = injection.GetMemory<Quaternion>(baseAddress, injection.Offsets.Character.Body.Base, boneOffset);
 		}
 
+		#pragma warning disable CS0067
 		public event PropertyChangedEventHandler PropertyChanged;
+		#pragma warning restore
 
 		public string BoneName { get; private set; }
 		public bool IsEnabled { get; set; } = true;
@@ -35,23 +50,9 @@ namespace ConceptMatrix.PoseModule
 			}
 		}
 
-		public QuaternionMemory RotationMemory
-		{
-			get
-			{
-				if (this.rotationMemory == null)
-				{
-					UIntPtr address = MemoryManager.Instance.MemLib.get64bitCode(SimplePoseViewModel.GetAddressString(this.BoneName));
-					this.rotationMemory = new QuaternionMemory(address);
-				}
-
-				return this.rotationMemory;
-			}
-		}
-
 		public void GetRotation()
 		{
-			this.Rotation = this.RotationMemory.Get();
+			this.Rotation = this.rotationMemory.Get();
 		}
 
 		public void SetRotation()
@@ -59,13 +60,13 @@ namespace ConceptMatrix.PoseModule
 			if (!this.IsEnabled)
 				return;
 
-			if (this.RotationMemory.Value == this.Rotation)
+			if (this.rotationMemory.Value == this.Rotation)
 				return;
 
 			Quaternion newRotation = this.Rotation;
 
 			Quaternion oldrotation = this.rotationMemory.Get();
-			this.RotationMemory.Set(newRotation);
+			this.rotationMemory.Set(newRotation);
 			Quaternion oldRotationConjugate = oldrotation;
 			oldRotationConjugate.Conjugate();
 
@@ -80,14 +81,14 @@ namespace ConceptMatrix.PoseModule
 			if (!this.IsEnabled)
 				return;
 
-			this.Rotation = this.RotationMemory.Get();
+			this.Rotation = this.rotationMemory.Get();
 			Quaternion newRotation = sourceNew * (sourceOldCnj * this.Rotation);
 
 			if (this.Rotation == newRotation)
 				return;
 
 			this.Rotation = newRotation;
-			this.RotationMemory.Set(this.Rotation);
+			this.rotationMemory.Set(this.Rotation);
 
 			foreach (Bone child in this.Children)
 			{

@@ -25,10 +25,12 @@ namespace ConceptMatrix.PoseModule.Controls
 		public NumberBox()
 		{
 			this.InitializeComponent();
-			this.Content.DataContext = this;
+			this.ContentArea.DataContext = this;
 		}
 
+		#pragma warning disable CS0067
 		public event PropertyChangedEventHandler PropertyChanged;
+		#pragma warning restore
 
 		public double TickFrequency
 		{

@@ -6,7 +6,7 @@ namespace ConceptMatrix.Offsets
 	using System.Xml.Serialization;
 
 	[XmlRoot("Settings")]
-	public struct Root
+	public struct OffsetsRoot
 	{
 		public string LastUpdated { get; set; }
 		public string AoBOffset { get; set; }

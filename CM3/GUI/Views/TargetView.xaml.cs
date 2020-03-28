@@ -31,12 +31,11 @@ namespace ConceptMatrix.GUI.Views
 					await Task.Delay(100);
 
 				IInjectionService injection = App.Services.Get<IInjectionService>();
-
-				IMemory<string> name = injection.GetMemory<string>(BaseAddresses.GPose, injection.Offsets.Character.Name);
-
 				while (true)
 				{
 					await Task.Delay(500);
+
+					IMemory<string> name = injection.GetMemory<string>(BaseAddresses.GPose, injection.Offsets.Character.Name);
 
 					Application.Current.Dispatcher.Invoke(() =>
 					{

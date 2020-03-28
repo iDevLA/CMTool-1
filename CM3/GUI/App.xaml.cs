@@ -46,6 +46,9 @@ namespace ConceptMatrix.GUI
 
 		private void OnError(Exception ex, string category)
 		{
+			if (Application.Current == null)
+				return;
+
 			Application.Current.Dispatcher.Invoke(() =>
 			{
 				ErrorDialog dlg = new ErrorDialog(ex);
@@ -62,6 +65,7 @@ namespace ConceptMatrix.GUI
 
 		private async Task InitializeServices()
 		{
+			await App.AddService<InjectionService>();
 			await App.AddService<ModuleService>();
 
 			Log.Write($"Services Initialized", "Application");

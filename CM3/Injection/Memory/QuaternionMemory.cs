@@ -4,8 +4,9 @@
 namespace ConceptMatrix.Injection.Memory
 {
 	using System;
+	using System.Windows.Media.Media3D;
 
-	/*public class QuaternionMemory : MemoryBase<Quaternion>
+	public class QuaternionMemory : MemoryBase<Quaternion>
 	{
 		public QuaternionMemory(ProcessInjection process, UIntPtr address)
 			: base(process, address)
@@ -33,5 +34,5 @@ namespace ConceptMatrix.Injection.Memory
 			Array.Copy(BitConverter.GetBytes((float)value.W), 0, bytearray, 12, 4);
 			this.WriteBytes(bytearray);
 		}
-	}*/
+	}
 }

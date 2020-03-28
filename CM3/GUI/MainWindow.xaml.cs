@@ -37,7 +37,7 @@ namespace ConceptMatrix.GUI
 
 			this.views.Add(path, view);
 
-			Application.Current.Dispatcher.Invoke(() =>
+			Application.Current?.Dispatcher.Invoke(() =>
 			{
 				this.ViewList.Items.Add(path);
 			});
@@ -45,6 +45,9 @@ namespace ConceptMatrix.GUI
 
 		private void OnLog(string message, string category)
 		{
+			if (Application.Current == null)
+				return;
+
 			Application.Current.Dispatcher.Invoke(() =>
 			{
 				this.LogDisplay.Content = $"[{category}] {message}";

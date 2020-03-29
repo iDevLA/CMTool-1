@@ -9,6 +9,12 @@ namespace ConceptMatrix.Offsets
 	{
 		None,
 		GPose,
+		Skeleton,
+		Skeleton2,
+		Skeleton3,
+		Physics,
+		Physics2,
+		Camera,
 	}
 
 	#pragma warning disable SA1649
@@ -20,6 +26,12 @@ namespace ConceptMatrix.Offsets
 			{
 				case BaseAddresses.None: return string.Empty;
 				case BaseAddresses.GPose: return root.GposeOffset;
+				case BaseAddresses.Skeleton: return root.SkeletonOffset;
+				case BaseAddresses.Skeleton2: return root.SkeletonOffset2;
+				case BaseAddresses.Skeleton3: return root.SkeletonOffset3;
+				case BaseAddresses.Physics: return root.PhysicsOffset;
+				case BaseAddresses.Physics2: return root.PhysicsOffset2;
+				case BaseAddresses.Camera: return root.CameraOffset;
 			}
 
 			throw new Exception($"Unrecognized base address offset: {address}");

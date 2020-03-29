@@ -6,12 +6,14 @@ namespace ConceptMatrix.PoseModule
 	using System;
 	using System.Collections.Generic;
 	using System.ComponentModel;
+	using System.Globalization;
 	using System.Reflection;
 	using System.Threading;
 	using System.Windows;
 	using System.Windows.Media.Media3D;
 	using ConceptMatrix;
 	using ConceptMatrix.Services;
+	using ConceptMatrix.ThreeD;
 	using PropertyChanged;
 
 	public class SimplePoseViewModel : INotifyPropertyChanged
@@ -51,28 +53,34 @@ namespace ConceptMatrix.PoseModule
 				this.CurrentBone = null;
 				this.enabled = value;
 
-				/*MemoryManager mem = MemoryManager.Instance;
+				IMemory<byte[]> skeleton = injection.GetMemory<byte[]>(Offsets.BaseAddresses.Skeleton);
+				IMemory<byte[]> skeleton2 = injection.GetMemory<byte[]>(Offsets.BaseAddresses.Skeleton2);
+				IMemory<byte[]> skeleton3 = injection.GetMemory<byte[]>(Offsets.BaseAddresses.Skeleton3);
+				IMemory<byte[]> physics = injection.GetMemory<byte[]>(Offsets.BaseAddresses.Physics);
+				IMemory<byte[]> physics2 = injection.GetMemory<byte[]>(Offsets.BaseAddresses.Physics2);
 
 				if (this.enabled)
 				{
-					mem.MemLib.writeMemory(mem.SkeletonAddress, "bytes", "0x90 0x90 0x90 0x90 0x90 0x90");
-					mem.MemLib.writeMemory(mem.SkeletonAddress2, "bytes", "0x90 0x90 0x90 0x90 0x90 0x90");
-					mem.MemLib.writeMemory(mem.SkeletonAddress3, "bytes", "0x90 0x90 0x90 0x90");
-					mem.MemLib.writeMemory(mem.PhysicsAddress, "bytes", "0x90 0x90 0x90 0x90");
-					mem.MemLib.writeMemory(mem.PhysicsAddress2, "bytes", "0x90 0x90 0x90");
+					skeleton.Set(new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 });
+					skeleton2.Set(new byte[] { 0x90, 0x90, 0x90, 0x90, 0x90, 0x90 });
+					skeleton3.Set(new byte[] { 0x90, 0x90, 0x90, 0x90 });
+					physics.Set(new byte[] { 0x90, 0x90, 0x90, 0x90 });
+					physics2.Set(new byte[] { 0x90, 0x90, 0x90 });
 
-					ThreadStart ts = new ThreadStart(this.WatchCamera);
-					Thread t = new Thread(ts);
-					t.Start();
+					// Poll changes thread
+					new Thread(new ThreadStart(this.PollChanges)).Start();
+
+					// Watch camera thread
+					new Thread(new ThreadStart(this.WatchCamera)).Start();
 				}
 				else
 				{
-					mem.MemLib.writeMemory(mem.SkeletonAddress, "bytes", "0x41 0x0F 0x29 0x5C 0x12 0x10");
-					mem.MemLib.writeMemory(mem.SkeletonAddress2, "bytes", "0x43 0x0F 0x29 0x5C 0x18 0x10");
-					mem.MemLib.writeMemory(mem.SkeletonAddress3, "bytes", "0x0F 0x29 0x5E 0x10");
-					mem.MemLib.writeMemory(mem.PhysicsAddress, "bytes", "0x0F 0x29 0x48 0x10");
-					mem.MemLib.writeMemory(mem.PhysicsAddress2, "bytes", "0x0F 0x29 0x00");
-				}*/
+					skeleton.Set(new byte[] { 0x41, 0x0F, 0x29, 0x5C, 0x12, 0x10 });
+					skeleton2.Set(new byte[] { 0x43, 0x0F, 0x29, 0x5C, 0x18, 0x10 });
+					skeleton3.Set(new byte[] { 0x0F, 0x29, 0x5E, 0x10 });
+					physics.Set(new byte[] { 0x0F, 0x29, 0x48, 0x10 });
+					physics2.Set(new byte[] { 0x0F, 0x29, 0x00 });
+				}
 			}
 		}
 
@@ -485,27 +493,35 @@ namespace ConceptMatrix.PoseModule
 			child.Parent = parent;
 		}
 
-		/*private void WatchCamera()
+		private void PollChanges()
 		{
-			string addressStr = MemoryManager.GetAddressString(MemoryManager.Instance.CameraAddress, Settings.Instance.Character.CamAngleX);
-			UIntPtr address = MemoryManager.Instance.MemLib.get64bitCode(addressStr);
-			FloatMemory xMem = new FloatMemory(address);
+			while (this.IsEnabled)
+			{
+				Thread.Sleep(32);
 
-			addressStr = MemoryManager.GetAddressString(MemoryManager.Instance.CameraAddress, Settings.Instance.Character.CamAngleY);
-			address = MemoryManager.Instance.MemLib.get64bitCode(addressStr);
-			FloatMemory yMem = new FloatMemory(address);
+				if (!this.IsEnabled)
+					continue;
 
-			addressStr = MemoryManager.GetAddressString(MemoryManager.Instance.CameraAddress, Settings.Instance.Character.CameraHeight2); //!?
-			address = MemoryManager.Instance.MemLib.get64bitCode(addressStr);
-			FloatMemory zMem = new FloatMemory(address);
+				if (this.CurrentBone == null)
+					continue;
+
+				this.CurrentBone.SetRotation();
+			}
+		}
+
+		private void WatchCamera()
+		{
+			IMemory<float> camX = injection.GetMemory<float>(Offsets.BaseAddresses.Camera, injection.Offsets.Character.CamAngleX);
+			IMemory<float> camY = injection.GetMemory<float>(Offsets.BaseAddresses.Camera, injection.Offsets.Character.CamAngleY);
+			IMemory<float> camZ = injection.GetMemory<float>(Offsets.BaseAddresses.Camera, injection.Offsets.Character.CameraHeight2);
 
 			while (this.IsEnabled && Application.Current != null)
 			{
-				Vector3D camEuler = new Vector3D();
+				Vector3D camEuler = default(Vector3D);
 
-				camEuler.Y = MathUtils.RadiansToDegrees(xMem.Get());
-				camEuler.Z = -MathUtils.RadiansToDegrees(yMem.Get());
-				camEuler.X = MathUtils.RadiansToDegrees(zMem.Get());
+				camEuler.Y = MathUtils.RadiansToDegrees(camX.Get());
+				camEuler.Z = -MathUtils.RadiansToDegrees(camY.Get());
+				camEuler.X = MathUtils.RadiansToDegrees(camZ.Get());
 
 				try
 				{
@@ -520,6 +536,6 @@ namespace ConceptMatrix.PoseModule
 
 				Thread.Sleep(32);
 			}
-		}*/
+		}
 	}
 }

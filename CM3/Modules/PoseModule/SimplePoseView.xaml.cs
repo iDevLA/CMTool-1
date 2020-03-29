@@ -22,10 +22,6 @@ namespace ConceptMatrix.PoseModule
 
 			Application.Current.Exit += this.OnApplicationExiting;
 
-			ThreadStart ts = new ThreadStart(this.PollChanges);
-			Thread th = new Thread(ts);
-			th.Start();
-
 			this.OnSelectionChanged(selectionService.CurrentSelection);
 		}
 
@@ -38,22 +34,6 @@ namespace ConceptMatrix.PoseModule
 
 			this.ViewModel = new SimplePoseViewModel(selection);
 			this.ContentArea.DataContext = this.ViewModel;
-		}
-
-		private void PollChanges()
-		{
-			while (this.IsVisible)
-			{
-				Thread.Sleep(32);
-
-				if (!this.ViewModel.IsEnabled)
-					continue;
-
-				if (this.ViewModel.CurrentBone == null)
-					continue;
-
-				this.ViewModel.CurrentBone.SetRotation();
-			}
 		}
 
 		private void OnApplicationExiting(object sender, ExitEventArgs e)

@@ -6,24 +6,26 @@
 		xmlns:local="clr-namespace:ConceptMatrix.GUI"
 		mc:Ignorable="d"
 		Title="Error" 
-		Height="300" 
+		Height="160" 
 		Width="450" 
 		WindowStartupLocation="CenterOwner"
 		WindowStyle="ToolWindow">
 	
 	<Grid Margin="3" x:Name="ContentArea">
 		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="48"/>
 			<RowDefinition/>
 			<RowDefinition Height="32"/>
 		</Grid.RowDefinitions>
 
-		<Label Grid.Row="0" Content="{Binding TitleText}"/>
+		<Label Grid.Row="0" Content="{Binding TitleText, FallbackValue='Some Error Message'}"/>
 
-		<ScrollViewer Grid.Row="1">
-			<TextBlock Text="{Binding MessageText}" TextWrapping="Wrap"/>
-		</ScrollViewer>
-
+		<Expander x:Name="DetailsExpander" Grid.Row="1" Header="Details" Expanded="OnExpanded" Collapsed="OnCollapsed">
+			<ScrollViewer Grid.Row="1">
+				<TextBlock Text="{Binding MessageText}" TextWrapping="Wrap"/>
+			</ScrollViewer>
+		</Expander>
+		
 		<StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
 			<Button Content="Quit" Width="75" Click="OnOkClick"/>
 		</StackPanel>

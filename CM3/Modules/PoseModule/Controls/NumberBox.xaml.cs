@@ -16,7 +16,7 @@ namespace ConceptMatrix.PoseModule.Controls
 	/// </summary>
 	public partial class NumberBox : UserControl, INotifyPropertyChanged
 	{
-		public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(nameof(Value), typeof(double), typeof(NumberBox), new FrameworkPropertyMetadata(new PropertyChangedCallback(OnValueChanged)));
+		public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(nameof(Value), typeof(double), typeof(NumberBox), new FrameworkPropertyMetadata(new PropertyChangedCallback(OnValueChangedStatic)));
 		public static readonly DependencyProperty TickFrequencyProperty = DependencyProperty.Register(nameof(TickFrequency), typeof(double), typeof(NumberBox));
 
 		private string inputString;
@@ -134,7 +134,7 @@ namespace ConceptMatrix.PoseModule.Controls
 			this.TickValue(e.Delta > 0);
 		}
 
-		private static void OnValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+		private static void OnValueChangedStatic(DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
 			if (sender is NumberBox numberBox)
 			{

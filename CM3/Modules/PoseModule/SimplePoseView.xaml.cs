@@ -6,6 +6,7 @@ namespace ConceptMatrix.PoseModule
 	using System.Threading;
 	using System.Windows;
 	using System.Windows.Controls;
+	using ConceptMatrix.Services;
 
 	/// <summary>
 	/// Interaction logic for CharacterPoseView.xaml.
@@ -15,14 +16,29 @@ namespace ConceptMatrix.PoseModule
 		public SimplePoseView()
 		{
 			this.InitializeComponent();
+
+			ISelectionService selectionService = Module.Services.Get<ISelectionService>();
+			selectionService.SelectionChanged += this.OnSelectionChanged;
+
 			Application.Current.Exit += this.OnApplicationExiting;
 
 			ThreadStart ts = new ThreadStart(this.PollChanges);
 			Thread th = new Thread(ts);
 			th.Start();
+
+			this.OnSelectionChanged(selectionService.CurrentSelection);
 		}
 
 		public SimplePoseViewModel ViewModel { get; set; }
+
+		private void OnSelectionChanged(Selection selection)
+		{
+			if (selection == null)
+				return;
+
+			this.ViewModel = new SimplePoseViewModel(selection);
+			this.ContentArea.DataContext = this.ViewModel;
+		}
 
 		private void PollChanges()
 		{
@@ -39,15 +55,6 @@ namespace ConceptMatrix.PoseModule
 				this.ViewModel.CurrentBone.SetRotation();
 			}
 		}
-
-		/*private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
-		{
-			if (this.DataContext is CharacterDetails details)
-			{
-				this.ViewModel = new SimplePoseViewModel(details);
-				this.ContentArea.DataContext = this.ViewModel;
-			}
-		}*/
 
 		private void OnApplicationExiting(object sender, ExitEventArgs e)
 		{

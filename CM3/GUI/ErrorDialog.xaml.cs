@@ -17,6 +17,9 @@ namespace ConceptMatrix.GUI
 			StringBuilder builder = new StringBuilder();
 			while (ex != null)
 			{
+				builder.Append("[");
+				builder.Append(ex.GetType().Name);
+				builder.Append("] ");
 				builder.AppendLine(ex.Message);
 				builder.AppendLine(ex.StackTrace);
 				builder.AppendLine();
@@ -28,6 +31,10 @@ namespace ConceptMatrix.GUI
 
 			this.InitializeComponent();
 			this.ContentArea.DataContext = this;
+
+			#if DEBUG
+			this.DetailsExpander.IsExpanded = true;
+			#endif
 		}
 
 		public string TitleText { get; set; }
@@ -37,6 +44,16 @@ namespace ConceptMatrix.GUI
 		{
 			this.Close();
 			Application.Current.Shutdown(2);
+		}
+
+		private void OnExpanded(object sender, RoutedEventArgs e)
+		{
+			this.Height = 500;
+		}
+
+		private void OnCollapsed(object sender, RoutedEventArgs e)
+		{
+			this.Height = 160;
 		}
 	}
 }

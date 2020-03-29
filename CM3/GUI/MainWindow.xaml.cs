@@ -4,6 +4,7 @@
 namespace ConceptMatrix.GUI
 {
 	using System;
+	using System.Reflection;
 	using System.Windows;
 	using System.Windows.Controls;
 	using ConceptMatrix;
@@ -48,6 +49,10 @@ namespace ConceptMatrix.GUI
 			{
 				this.currentView = (UserControl)Activator.CreateInstance(viewType);
 				this.ViewArea.Content = this.currentView;
+			}
+			catch (TargetInvocationException ex)
+			{
+				Log.Write(new Exception($"Failed to create view: {viewType}", ex.InnerException));
 			}
 			catch (Exception ex)
 			{

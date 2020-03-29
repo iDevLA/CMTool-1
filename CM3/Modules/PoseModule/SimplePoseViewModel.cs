@@ -25,14 +25,14 @@ namespace ConceptMatrix.PoseModule
 		private IMemory<int> race;
 		private IMemory<int> tailType;
 
-		public SimplePoseViewModel()
+		public SimplePoseViewModel(Selection selection)
 		{
 			injection = Module.Services.Get<IInjectionService>();
 
-			this.GenerateBones();
+			this.race = injection.GetMemory<int>(selection.BaseAddress, injection.Offsets.Character.Race);
+			this.tailType = injection.GetMemory<int>(selection.BaseAddress, injection.Offsets.Character.TailType);
 
-			this.race = injection.GetMemory<int>(Offsets.BaseAddresses.GPose, injection.Offsets.Character.Race);
-			this.tailType = injection.GetMemory<int>(Offsets.BaseAddresses.GPose, injection.Offsets.Character.TailType);
+			this.GenerateBones();
 		}
 
 		#pragma warning disable CS0067
@@ -52,9 +52,6 @@ namespace ConceptMatrix.PoseModule
 				this.enabled = value;
 
 				/*MemoryManager mem = MemoryManager.Instance;
-
-				// Not sure I want both simple pose and pose matrix trying to edit bones at the same time.
-				////CharacterDetails.BoneEditMode = this.enabled;
 
 				if (this.enabled)
 				{

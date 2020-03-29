@@ -15,7 +15,7 @@ namespace ConceptMatrix.Injection.Memory
 		protected override int Read()
 		{
 			byte[] b = this.ReadBytes(1);
-			return Convert.ToInt32(b);
+			return (int)b[0];
 		}
 
 		protected override void Write(int value)

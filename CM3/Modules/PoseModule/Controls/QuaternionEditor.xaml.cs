@@ -19,9 +19,9 @@ namespace ConceptMatrix.PoseModule.Controls
 	/// </summary>
 	public partial class QuaternionEditor : UserControl, INotifyPropertyChanged
 	{
-		public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(nameof(Value), typeof(Quaternion), typeof(QuaternionEditor), new FrameworkPropertyMetadata(new PropertyChangedCallback(OnValueChanged)));
+		public static readonly DependencyProperty ValueProperty = DependencyProperty.Register(nameof(Value), typeof(Quaternion), typeof(QuaternionEditor), new FrameworkPropertyMetadata(new PropertyChangedCallback(OnValueChangedStatic)));
 		public static readonly DependencyProperty TickFrequencyProperty = DependencyProperty.Register(nameof(TickFrequency), typeof(double), typeof(QuaternionEditor));
-		public static readonly DependencyProperty CameraRotationProperty = DependencyProperty.Register(nameof(CameraRotation), typeof(Quaternion), typeof(QuaternionEditor), new FrameworkPropertyMetadata(new PropertyChangedCallback(OnCameraRotationChanged)));
+		public static readonly DependencyProperty CameraRotationProperty = DependencyProperty.Register(nameof(CameraRotation), typeof(Quaternion), typeof(QuaternionEditor), new FrameworkPropertyMetadata(new PropertyChangedCallback(OnCameraRotationChangedStatic)));
 
 		private Vector3D euler;
 		private bool eulerLock = false;
@@ -132,7 +132,7 @@ namespace ConceptMatrix.PoseModule.Controls
 			}
 		}
 
-		private static void OnValueChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+		private static void OnValueChangedStatic(DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
 			if (sender is QuaternionEditor quaternionEditor)
 			{
@@ -149,7 +149,7 @@ namespace ConceptMatrix.PoseModule.Controls
 			}
 		}
 
-		private static void OnCameraRotationChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+		private static void OnCameraRotationChangedStatic(DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
 			if (sender is QuaternionEditor quaternionEditor)
 			{

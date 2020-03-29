@@ -130,6 +130,7 @@
     <ProjectReference Include="..\..\Offsets\Offsets.csproj">
       <Project>{849A5202-58F0-47CA-A7BC-46EAD222B3EF}</Project>
       <Name>Offsets</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\ThreeD\ThreeD.csproj">
       <Project>{57B50980-3643-4D41-A8AC-045646DA7310}</Project>

@@ -3,11 +3,8 @@
 
 namespace ConceptMatrix.GUI.Views
 {
-	using System;
-	using System.Threading.Tasks;
 	using System.Windows;
 	using System.Windows.Controls;
-	using ConceptMatrix.Offsets;
 	using ConceptMatrix.Services;
 
 	/// <summary>
@@ -20,18 +17,29 @@ namespace ConceptMatrix.GUI.Views
 			this.InitializeComponent();
 
 			ISelectionService selection = App.Services.Get<ISelectionService>();
-			selection.SelectionChanged += this.Selection_SelectionChanged;
+			selection.SelectionChanged += this.OnSelectionChanged;
+			this.OnSelectionChanged(selection.CurrentSelection);
 		}
 
-		private void Selection_SelectionChanged(SelectionArgs args)
+		private void OnSelectionChanged(Selection args)
 		{
-			IInjectionService injection = App.Services.Get<IInjectionService>();
-			IMemory<string> name = injection.GetMemory<string>(args.BaseAddress, injection.Offsets.Character.Name);
-
-			Application.Current.Dispatcher.Invoke(() =>
+			if (args == null)
 			{
-				this.NameLabel.Content = name.Get();
-			});
+				Application.Current.Dispatcher.Invoke(() =>
+				{
+					this.NameLabel.Content = string.Empty;
+				});
+			}
+			else
+			{
+				IInjectionService injection = App.Services.Get<IInjectionService>();
+				IMemory<string> name = injection.GetMemory<string>(args.BaseAddress, injection.Offsets.Character.Name);
+
+				Application.Current.Dispatcher.Invoke(() =>
+				{
+					this.NameLabel.Content = name.Get();
+				});
+			}
 		}
 	}
 }

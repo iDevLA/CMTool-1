@@ -10,12 +10,22 @@ namespace ConceptMatrix.GUI.Services
 
 	public class SelectionService : ISelectionService
 	{
+		private Selection currentSelection;
+
 		public event SelectionEvent SelectionChanged;
 
 		public bool IsAlive
 		{
 			get;
 			private set;
+		}
+
+		public Selection CurrentSelection
+		{
+			get
+			{
+				return this.currentSelection;
+			}
 		}
 
 		public Task Initialize(IServices services)
@@ -50,10 +60,8 @@ namespace ConceptMatrix.GUI.Services
 
 				if (newActorId != oldActorId)
 				{
-					SelectionArgs args = new SelectionArgs();
-					args.Type = SelectionArgs.Types.Character;
-					args.BaseAddress = BaseAddresses.GPose;
-					this.SelectionChanged?.Invoke(args);
+					this.currentSelection = new Selection(Selection.Types.Character, BaseAddresses.GPose);
+					this.SelectionChanged?.Invoke(this.currentSelection);
 
 					oldActorId = newActorId;
 				}

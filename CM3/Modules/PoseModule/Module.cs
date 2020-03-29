@@ -7,6 +7,7 @@ namespace ConceptMatrix.PoseModule
 	using System.Threading.Tasks;
 	using ConceptMatrix;
 	using ConceptMatrix.Modules;
+	using ConceptMatrix.Services;
 
 	public class Module : ModuleBase
 	{
@@ -14,7 +15,8 @@ namespace ConceptMatrix.PoseModule
 		{
 			Log.Write("Hello!", "Pose Module");
 
-			this.AddView<SimplePoseView>("Pose");
+			IViewService viewService = services.Get<IViewService>();
+			viewService.AddView<SimplePoseView>("Pose");
 
 			return Task.CompletedTask;
 		}

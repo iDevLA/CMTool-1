@@ -8,10 +8,6 @@ namespace ConceptMatrix.Modules
 
 	public abstract class ModuleBase
 	{
-		public delegate void ViewEvent(string path, Type view);
-
-		public event ViewEvent AddModuleView;
-
 		public static IServices Services { get; private set; }
 
 		/// <summary>
@@ -37,14 +33,6 @@ namespace ConceptMatrix.Modules
 		public virtual Task Shutdown()
 		{
 			return Task.CompletedTask;
-		}
-
-		/// <summary>
-		/// Add a custom view to the sidebar at the given path.
-		/// </summary>
-		public void AddView<T>(string path)
-		{
-			this.AddModuleView?.Invoke(path, typeof(T));
 		}
 	}
 }

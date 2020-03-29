@@ -13,6 +13,11 @@ namespace ConceptMatrix.GUI
 	{
 		private List<IService> services = new List<IService>();
 
+		public delegate void ServiceEvent(string serviceName);
+
+		public static event ServiceEvent OnServiceInitializing;
+		public static event ServiceEvent OnServiceStarting;
+
 		public bool IsInitialized { get; private set; } = false;
 		public bool IsStarted { get; private set; } = false;
 
@@ -36,14 +41,19 @@ namespace ConceptMatrix.GUI
 		{
 			try
 			{
-				Log.Write($"Adding service: {typeof(T).Name}", "Services");
+				string serviceName = GetServiceName<T>();
+
+				Log.Write($"Adding service: {serviceName}", "Services");
 				IService service = Activator.CreateInstance<T>();
 				this.services.Add(service);
+
+				OnServiceInitializing?.Invoke(serviceName);
 				await service.Initialize(this);
 
 				// If we've already started, and this service is being added late (possibly by a module from its start method) start the service immediately.
 				if (this.IsStarted)
 				{
+					OnServiceStarting?.Invoke(serviceName);
 					await service.Start();
 				}
 			}
@@ -56,6 +66,8 @@ namespace ConceptMatrix.GUI
 		public async Task InitializeServices()
 		{
 			await this.AddService<InjectionService>();
+			await this.AddService<ViewService>();
+			await this.AddService<SelectionService>();
 			await this.AddService<ModuleService>();
 
 			this.IsInitialized = true;
@@ -70,6 +82,7 @@ namespace ConceptMatrix.GUI
 			List<IService> services = new List<IService>(this.services);
 			foreach (IService service in services)
 			{
+				OnServiceStarting?.Invoke(GetServiceName(service.GetType()));
 				await service.Start();
 			}
 
@@ -83,6 +96,16 @@ namespace ConceptMatrix.GUI
 			{
 				await service.Shutdown();
 			}
+		}
+
+		private static string GetServiceName<T>()
+		{
+			return GetServiceName(typeof(T));
+		}
+
+		private static string GetServiceName(Type type)
+		{
+			return type.Name;
 		}
 	}
 }

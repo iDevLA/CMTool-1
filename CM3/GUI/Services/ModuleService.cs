@@ -17,8 +17,6 @@ namespace ConceptMatrix.GUI.Services
 	{
 		private List<ModuleBase> modules = new List<ModuleBase>();
 
-		public static event ViewEvent AddView;
-
 		public Task Initialize(IServices services)
 		{
 			return this.InitializeModules("./Modules/", services);
@@ -64,7 +62,6 @@ namespace ConceptMatrix.GUI.Services
 					if (typeof(ModuleBase).IsAssignableFrom(type))
 					{
 						ModuleBase module = (ModuleBase)Activator.CreateInstance(type);
-						module.AddModuleView += this.OnAddModuleView;
 						await module.Initialize(services);
 					}
 				}
@@ -79,14 +76,8 @@ namespace ConceptMatrix.GUI.Services
 		{
 			foreach (ModuleBase module in this.modules)
 			{
-				module.AddModuleView -= this.OnAddModuleView;
 				await module.Shutdown();
 			}
-		}
-
-		private void OnAddModuleView(string path, Type view)
-		{
-			AddView?.Invoke(path, view);
 		}
 	}
 }

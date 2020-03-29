@@ -18,35 +18,20 @@ namespace ConceptMatrix.GUI.Views
 		public TargetView()
 		{
 			this.InitializeComponent();
-			Task.Run(this.Cheat);
+
+			ISelectionService selection = App.Services.Get<ISelectionService>();
+			selection.SelectionChanged += this.Selection_SelectionChanged;
 		}
 
-		public async Task Cheat()
+		private void Selection_SelectionChanged(SelectionArgs args)
 		{
-			try
+			IInjectionService injection = App.Services.Get<IInjectionService>();
+			IMemory<string> name = injection.GetMemory<string>(args.BaseAddress, injection.Offsets.Character.Name);
+
+			Application.Current.Dispatcher.Invoke(() =>
 			{
-				await Task.Delay(100);
-
-				while (!App.Services.IsStarted)
-					await Task.Delay(100);
-
-				IInjectionService injection = App.Services.Get<IInjectionService>();
-				while (true)
-				{
-					await Task.Delay(500);
-
-					IMemory<string> name = injection.GetMemory<string>(BaseAddresses.GPose, injection.Offsets.Character.Name);
-
-					Application.Current.Dispatcher.Invoke(() =>
-					{
-						this.NameLabel.Content = name.Get();
-					});
-				}
-			}
-			catch (Exception ex)
-			{
-				Log.Write(ex);
-			}
+				this.NameLabel.Content = name.Get();
+			});
 		}
 	}
 }

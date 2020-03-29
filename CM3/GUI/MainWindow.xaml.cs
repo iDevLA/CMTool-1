@@ -4,8 +4,6 @@
 namespace ConceptMatrix.GUI
 {
 	using System;
-	using System.Collections.Generic;
-	using System.Text;
 	using System.Windows;
 	using System.Windows.Controls;
 	using ConceptMatrix;
@@ -16,48 +14,35 @@ namespace ConceptMatrix.GUI
 	/// </summary>
 	public partial class MainWindow : Window
 	{
-		private Dictionary<string, Type> views = new Dictionary<string, Type>();
 		private UserControl currentView;
+		private ViewService viewService;
 
 		public MainWindow()
 		{
 			this.InitializeComponent();
 
-			ModuleService.AddView += this.OnAddView;
-			Log.OnLog += this.OnLog;
+			this.viewService = App.Services.Get<ViewService>();
+
+			this.viewService.AddingView += this.OnAddView;
+
+			foreach (string path in this.viewService.ViewPaths)
+			{
+				this.OnAddView(path);
+			}
 		}
 
-		private void OnAddView(string path, Type view)
+		private void OnAddView(string path)
 		{
-			if (this.views.ContainsKey(path))
-				throw new Exception($"View already registered at path: {path}");
-
-			if (!typeof(UserControl).IsAssignableFrom(view))
-				throw new Exception($"View: {view} does not extend from UserControl.");
-
-			this.views.Add(path, view);
-
 			Application.Current?.Dispatcher.Invoke(() =>
 			{
 				this.ViewList.Items.Add(path);
 			});
 		}
 
-		private void OnLog(string message, string category)
-		{
-			if (Application.Current == null)
-				return;
-
-			Application.Current.Dispatcher.Invoke(() =>
-			{
-				this.LogDisplay.Content = $"[{category}] {message}";
-			});
-		}
-
 		private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 			string path = (string)this.ViewList.SelectedItem;
-			Type viewType = this.views[path];
+			Type viewType = this.viewService.GetView(path);
 
 			try
 			{

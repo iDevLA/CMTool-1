@@ -20,10 +20,10 @@ namespace ConceptMatrix.GUI
 			this.Exit += this.OnAppExit;
 			Log.OnError += this.OnError;
 
-			this.MainWindow = new ConceptMatrix.GUI.MainWindow();
+			this.MainWindow = new SplashWindow();
 			this.MainWindow.Show();
 
-			Task.Run(serviceManager.InitializeServices);
+			Task.Run(this.Start);
 		}
 
 		public static ServiceManager Services
@@ -32,6 +32,19 @@ namespace ConceptMatrix.GUI
 			{
 				return serviceManager;
 			}
+		}
+
+		private async Task Start()
+		{
+			await serviceManager.InitializeServices();
+
+			Application.Current.Dispatcher.Invoke(() =>
+			{
+				Window oldwindow = this.MainWindow;
+				this.MainWindow = new ConceptMatrix.GUI.MainWindow();
+				this.MainWindow.Show();
+				oldwindow.Close();
+			});
 		}
 
 		private void OnError(Exception ex, string category)

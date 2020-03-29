@@ -32,8 +32,11 @@ namespace ConceptMatrix.PoseModule
 			if (selection == null)
 				return;
 
-			this.ViewModel = new SimplePoseViewModel(selection);
-			this.ContentArea.DataContext = this.ViewModel;
+			Application.Current.Dispatcher.Invoke(() =>
+			{
+				this.ViewModel = new SimplePoseViewModel(selection);
+				this.ContentArea.DataContext = this.ViewModel;
+			});
 		}
 
 		private void OnApplicationExiting(object sender, ExitEventArgs e)

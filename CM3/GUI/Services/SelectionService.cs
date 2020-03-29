@@ -3,6 +3,7 @@
 
 namespace ConceptMatrix.GUI.Services
 {
+	using System;
 	using System.Threading.Tasks;
 	using ConceptMatrix;
 	using ConceptMatrix.Offsets;
@@ -61,7 +62,15 @@ namespace ConceptMatrix.GUI.Services
 				if (newActorId != oldActorId)
 				{
 					this.currentSelection = new Selection(Selection.Types.Character, BaseAddresses.GPose);
-					this.SelectionChanged?.Invoke(this.currentSelection);
+
+					try
+					{
+						this.SelectionChanged?.Invoke(this.currentSelection);
+					}
+					catch (Exception ex)
+					{
+						Log.Write(new Exception("Failed to invoke selection changed event.", ex));
+					}
 
 					oldActorId = newActorId;
 				}

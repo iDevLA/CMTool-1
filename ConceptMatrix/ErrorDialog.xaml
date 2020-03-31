@@ -1,0 +1,50 @@
+﻿<Window x:Class="ConceptMatrix.GUI.ErrorDialog"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="clr-namespace:ConceptMatrix.GUI"
+		mc:Ignorable="d"
+		Title="Error" 
+		Height="130" 
+		Width="550" 
+		WindowStartupLocation="CenterOwner"
+		WindowStyle="None"
+		ResizeMode="NoResize"
+		Background="Transparent"
+		AllowsTransparency="True"
+		MouseDown="OnMouseDown">
+
+	<Border Background="{StaticResource MaterialDesignBackground}" Margin="10" CornerRadius="2">
+		<Border.Effect>
+			<DropShadowEffect ShadowDepth="0" BlurRadius="10" Opacity="0.5"/>
+		</Border.Effect>
+
+		<Grid Margin="3" x:Name="ContentArea">
+			<Grid.RowDefinitions>
+				<RowDefinition/>
+				<RowDefinition Height="32"/>
+			</Grid.RowDefinitions>
+
+			<Expander x:Name="DetailsExpander" 
+					  Grid.Row="0" 
+					  Header="An error has occurred. the application must quit." 
+					  Expanded="OnExpanded" 
+					  Collapsed="OnCollapsed"
+					  Background="Transparent"
+					  Margin="0, 10, 0, 0"
+					  Padding="0"
+					  VerticalAlignment="Stretch"
+					  VerticalContentAlignment="Stretch">
+				<ScrollViewer Style="{DynamicResource MaterialDesignScrollViewer}" Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalAlignment="Stretch" Height="256">
+					<TextBlock x:Name="StackTraceBlock" TextWrapping="NoWrap" Style="{DynamicResource MaterialDesignBody1TextBlock}" VerticalAlignment="Stretch" Margin="10"/>
+				</ScrollViewer>
+			</Expander>
+
+			<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+				<Button Content="Quit" Width="75" Click="OnOkClick" Background="#DD2020" BorderBrush="#CC1010"/>
+			</StackPanel>
+
+		</Grid>
+	</Border>
+</Window>

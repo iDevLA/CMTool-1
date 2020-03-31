@@ -1,174 +1,111 @@
-﻿using ConceptMatrix.Models;
-using ConceptMatrix.Utility;
-using ConceptMatrix.ViewModel;
-using Microsoft.Win32;
-using System;
-using System.Diagnostics;
-using System.IO;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Forms;
-using System.Windows.Threading;
-using Application = System.Windows.Application;
-using Clipboard = System.Windows.Clipboard;
+﻿// Concept Matrix 3.
+// Licensed under the MIT license.
+
 namespace ConceptMatrix
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
-    public partial class App : Application
-    {
-		public static readonly string ToolName = "Concept Matrix";
-		public static readonly string ToolBin = "CMTool";
-		public static readonly string UpdaterName = "Concept Matrix Updater";
-		public static readonly string UpdaterBin = "ConceptMatrixUpdater";
-		public static readonly string GithubRepo = "imchillin/CMTool";
-		public static readonly string TwitterHandle = "ffxivsstool";
-		public static readonly string DiscordCode = "hq3DnBa";
+	using System;
+	using System.Threading.Tasks;
+	using System.Windows;
+	using System.Windows.Threading;
+	using ConceptMatrix.GUI;
 
-		public CharacterDetails CharacterDetails { get => (CharacterDetails)BaseViewModel.model; set => BaseViewModel.model = value; }
-        protected override void OnStartup(StartupEventArgs e)
-        {
-            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+	using Application = System.Windows.Application;
 
-            Dispatcher.UnhandledException += DispatcherOnUnhandledException;
+	/// <summary>
+	/// Interaction logic for App.xaml.
+	/// </summary>
+	public partial class App : Application
+	{
+		private static ServiceManager serviceManager = new ServiceManager();
 
-            Application.Current.DispatcherUnhandledException += CurrentOnDispatcherUnhandledException;
+		public static ServiceManager Services
+		{
+			get
+			{
+				return serviceManager;
+			}
+		}
 
-            TaskScheduler.UnobservedTaskException += TaskSchedulerOnUnobservedTaskException;
+		protected override void OnStartup(StartupEventArgs e)
+		{
+			AppDomain.CurrentDomain.UnhandledException += this.CurrentDomain_UnhandledException;
+			this.Dispatcher.UnhandledException += this.DispatcherOnUnhandledException;
+			Application.Current.DispatcherUnhandledException += this.CurrentOnDispatcherUnhandledException;
+			TaskScheduler.UnobservedTaskException += this.TaskSchedulerOnUnobservedTaskException;
+			Log.OnError += this.OnError;
+			this.Exit += this.OnExit;
 
-            GetDotNetFromRegistry();
-            base.OnStartup(e);
+			base.OnStartup(e);
 
-            this.Exit += App_Exit;
-        }
+			this.MainWindow = new SplashWindow();
+			this.MainWindow.Show();
 
-        private static void GetDotNetFromRegistry()
-        {
-            const string subkey = @"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full\";
+			Task.Run(this.Start);
+		}
 
-            using (var ndpKey = RegistryKey.OpenBaseKey(RegistryHive.LocalMachine, RegistryView.Registry32).OpenSubKey(subkey))
-            {
-                if (ndpKey != null && ndpKey.GetValue("Release") != null)
-                {
-                    if ((int)ndpKey.GetValue("Release") <= 394801)
-                    {
-                        var msgResult = System.Windows.MessageBox.Show(".NET Framework Version 4.6.2 or later is not detected. Please install", ".Net Framework not installed", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
-                        if (msgResult == MessageBoxResult.Yes)
-                        {
+		private void OnExit(object sender, ExitEventArgs e)
+		{
+			Task t = serviceManager.ShutdownServices();
+			t.Wait();
+		}
 
-                            Process.Start("https://dotnet.microsoft.com/download/dotnet-framework/net472");
-                            Application.Current.Shutdown();
-                        }
-                    }
-                }
-                else
-                {
-                    var msgResult = System.Windows.MessageBox.Show(".NET Framework Version 4.6.2 or later is not detected. Please install", ".Net Framework not installed", MessageBoxButton.YesNo, MessageBoxImage.Question, MessageBoxResult.Yes);
-                    if (msgResult == MessageBoxResult.Yes)
-                    {
+		private void TaskSchedulerOnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
+		{
+			this.OnError(e.Exception as Exception, "Unhandled");
+		}
 
-                        Process.Start("https://dotnet.microsoft.com/download/dotnet-framework/net472");
-                        Application.Current.Shutdown();
-                    }
-                }
-            }
-        }
+		private void CurrentOnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+		{
+			this.OnError(e.Exception as Exception, "Unhandled");
+		}
 
-        public static bool IsValidGamePath(string path)
-        {
-            if (string.IsNullOrWhiteSpace(path))
-                return false;
+		private void DispatcherOnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+		{
+			this.OnError(e.Exception as Exception, "Unhandled");
+		}
 
-            if (!Directory.Exists(path))
-                return false;
+		private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+		{
+			this.OnError(e.ExceptionObject as Exception, "Unhandled");
+		}
 
-            if (File.Exists(Path.Combine(path, "game", "ffxivgame.ver")))
-                return File.Exists(Path.Combine(path, "game", "ffxivgame.ver"));
+		private async Task Start()
+		{
+			try
+			{
+				await serviceManager.InitializeServices();
 
-            return false;
-        }
+				Application.Current.Dispatcher.Invoke(() =>
+				{
+					Window oldwindow = this.MainWindow;
+					this.MainWindow = new ConceptMatrix.GUI.MainWindow();
+					this.MainWindow.Show();
+					oldwindow.Close();
+				});
+			}
+			catch (Exception ex)
+			{
+				Log.Write(ex);
+			}
+		}
 
-        private void App_Exit(object sender, ExitEventArgs e)
-        {
-            Utility.SaveSettings.Default.Save();
-            if (CharacterDetails.BoneEditMode) MainViewModel.ViewTime5.EditModeButton.IsChecked = false;
-        }
+		private void OnError(Exception ex, string category)
+		{
+			if (Application.Current == null)
+				return;
 
-        private void TaskSchedulerOnUnobservedTaskException(object sender, UnobservedTaskExceptionEventArgs e)
-        {
-            var ver = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
+			Application.Current.Dispatcher.Invoke(() =>
+			{
+				ErrorDialog dlg = new ErrorDialog(ex);
+				dlg.Owner = this.MainWindow;
+				dlg.ShowDialog();
+			});
+		}
 
-            const string lineBreak = "\n======================================================\n";
-
-            var errorText = "Concept Matirx ran into an error.\n\n" +
-                            "Please submit a bug report with the following information.\n " +
-                            lineBreak +
-                            e.Exception +
-                            lineBreak + "\n" +
-                            "Copy to clipboard?";
-
-            if (FlexibleMessageBox.Show(errorText, "Crash Report " + ver, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
-            {
-                Clipboard.SetText(e.Exception.ToString());
-            }
-        }
-
-        private void CurrentOnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
-        {
-            var ver = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
-
-            const string lineBreak = "\n======================================================\n";
-
-            var errorText = "Concept Matirx ran into an error.\n\n" +
-                            "Please submit a bug report with the following information.\n " +
-                            lineBreak +
-                            e.Exception +
-                            lineBreak + "\n" +
-                            "Copy to clipboard?";
-
-            if (FlexibleMessageBox.Show(errorText, "Crash Report " + ver, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
-            {
-                Clipboard.SetText(e.Exception.ToString());
-            }
-        }
-
-        private void DispatcherOnUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
-        {
-            var ver = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
-
-            const string lineBreak = "\n======================================================\n";
-
-            var errorText = "Concept Matirx ran into an error.\n\n" +
-                            "Please submit a bug report with the following information.\n " +
-                            lineBreak +
-                            e.Exception +
-                            lineBreak + "\n" +
-                            "Copy to clipboard?";
-
-            if (FlexibleMessageBox.Show(errorText, "Crash Report " + ver, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
-            {
-                Clipboard.SetText(e.Exception.ToString());
-            }
-        }
-
-        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            var ver = FileVersionInfo.GetVersionInfo(System.Reflection.Assembly.GetExecutingAssembly().Location).FileVersion;
-
-            const string lineBreak = "\n======================================================\n";
-
-            var errorText = "Concept Matirx ran into an error.\n\n" +
-                            "Please submit a bug report with the following information.\n " +
-                            lineBreak +
-                            e.ExceptionObject +
-                            lineBreak + "\n" +
-                            "Copy to clipboard?";
-
-            if (FlexibleMessageBox.Show(errorText, "Crash Report " + ver, MessageBoxButtons.YesNo, MessageBoxIcon.Error) == DialogResult.Yes)
-            {
-                Clipboard.SetText(e.ExceptionObject.ToString());
-            }
-        }
-    }
+		private void OnAppExit(object sender, ExitEventArgs e)
+		{
+			Task t = serviceManager.ShutdownServices();
+			t.Wait();
+		}
+	}
 }

@@ -21,17 +21,44 @@ namespace ConceptMatrix.GUI.Services
 			private set;
 		}
 
+		public bool UseGameTarget
+		{
+			get;
+			set;
+		}
+
 		public Selection CurrentSelection
 		{
 			get
 			{
 				return this.currentSelection;
 			}
+
+			set
+			{
+				this.currentSelection = value;
+
+				try
+				{
+					this.SelectionChanged?.Invoke(this.currentSelection);
+				}
+				catch (Exception ex)
+				{
+					Log.Write(new Exception("Failed to invoke selection changed event.", ex));
+				}
+			}
+		}
+
+		public Selection CurrentGameTarget
+		{
+			get;
+			private set;
 		}
 
 		public Task Initialize(IServices services)
 		{
 			this.IsAlive = true;
+			this.UseGameTarget = true;
 			return Task.CompletedTask;
 		}
 
@@ -51,31 +78,31 @@ namespace ConceptMatrix.GUI.Services
 		{
 			IInjectionService injection = App.Services.Get<IInjectionService>();
 
-			string oldActorId = null;
 			while (this.IsAlive)
 			{
-				// TODO: I suspect Jhoto knows a better way to get the active selection.
-				IMemory<string> actorId = injection.GetMemory<string>(BaseAddresses.GPose, injection.Offsets.Character.ActorID);
+				await Task.Delay(100);
 
-				string newActorId = actorId.Get();
+				IMemory<string> actorIdMem = injection.GetMemory<string>(BaseAddresses.GPose, injection.Offsets.Character.ActorID);
+				string actorId = actorIdMem.Get();
 
-				if (newActorId != oldActorId)
+				if (string.IsNullOrEmpty(actorId))
 				{
-					this.currentSelection = new Selection(Selection.Types.Character, BaseAddresses.GPose);
-
-					try
-					{
-						this.SelectionChanged?.Invoke(this.currentSelection);
-					}
-					catch (Exception ex)
-					{
-						Log.Write(new Exception("Failed to invoke selection changed event.", ex));
-					}
-
-					oldActorId = newActorId;
+					this.CurrentGameTarget = null;
+					continue;
 				}
 
-				await Task.Delay(100);
+				if (this.CurrentGameTarget == null || this.CurrentGameTarget.ActorId != actorId)
+				{
+					IMemory<string> nameMem = injection.GetMemory<string>(BaseAddresses.GPose, injection.Offsets.Character.Name);
+					string name = nameMem.Get();
+
+					this.CurrentGameTarget = new Selection(Selection.Types.Character, BaseAddresses.GPose, actorId, name);
+				}
+
+				if (this.UseGameTarget && this.CurrentSelection != this.CurrentGameTarget)
+				{
+					this.CurrentSelection = this.CurrentGameTarget;
+				}
 			}
 		}
 	}

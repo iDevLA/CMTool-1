@@ -130,6 +130,9 @@
     <Compile Include="Services\ModuleService.cs" />
     <Compile Include="Services\SelectionService.cs" />
     <Compile Include="Services\ViewService.cs" />
+    <Compile Include="Views\TargetSelectorView.xaml.cs">
+      <DependentUpon>TargetSelectorView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\TargetView.xaml.cs">
       <DependentUpon>TargetView.xaml</DependentUpon>
     </Compile>
@@ -156,6 +159,10 @@
       <DependentUpon>SplashWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Views\TargetSelectorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\TargetView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

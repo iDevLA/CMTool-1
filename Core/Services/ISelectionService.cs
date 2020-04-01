@@ -19,18 +19,24 @@ namespace ConceptMatrix.Services
 
 	public class Selection
 	{
-		public readonly Types Type;
 		public readonly BaseAddresses BaseAddress;
+		public readonly string ActorId;
 
-		public Selection(Types type, BaseAddresses address)
+		public Selection(Types type, BaseAddresses address, string actorId, string name)
 		{
 			this.Type = type;
 			this.BaseAddress = address;
+			this.ActorId = actorId;
+			this.Name = name;
 		}
 
 		public enum Types
 		{
 			Character,
 		}
+
+		public Types Type { get; private set; }
+
+		public string Name { get; private set; }
 	}
 }

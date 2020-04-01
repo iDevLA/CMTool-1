@@ -3,8 +3,10 @@
 
 namespace ConceptMatrix.GUI.Views
 {
+	using System.ComponentModel;
 	using System.Windows;
 	using System.Windows.Controls;
+	using ConceptMatrix.GUI.Services;
 	using ConceptMatrix.Services;
 
 	/// <summary>
@@ -12,34 +14,40 @@ namespace ConceptMatrix.GUI.Views
 	/// </summary>
 	public partial class TargetView : UserControl
 	{
+		private SelectionService selection;
+
 		public TargetView()
 		{
 			this.InitializeComponent();
 
-			ISelectionService selection = App.Services.Get<ISelectionService>();
-			selection.SelectionChanged += this.OnSelectionChanged;
-			this.OnSelectionChanged(selection.CurrentSelection);
+			if (DesignerProperties.GetIsInDesignMode(this))
+				return;
+
+			this.selection = App.Services.Get<SelectionService>();
+			this.selection.SelectionChanged += this.OnSelectionChanged;
+			this.OnSelectionChanged(this.selection.CurrentSelection);
 		}
 
-		private void OnSelectionChanged(Selection args)
+		private void OnSelectionChanged(Selection newSelection)
 		{
-			if (args == null)
+			Application.Current.Dispatcher.Invoke(() =>
 			{
-				Application.Current.Dispatcher.Invoke(() =>
-				{
-					this.NameLabel.Content = string.Empty;
-				});
-			}
-			else
-			{
-				IInjectionService injection = App.Services.Get<IInjectionService>();
-				IMemory<string> name = injection.GetMemory<string>(args.BaseAddress, injection.Offsets.Character.Name);
+				this.ModeLabel.Content = this.selection.UseGameTarget ? "Auto Selection" : "Manual Selection";
 
-				Application.Current.Dispatcher.Invoke(() =>
+				if (newSelection != null)
 				{
-					this.NameLabel.Content = name.Get();
-				});
-			}
+					this.NameLabel.Content = newSelection.Name;
+				}
+				else
+				{
+					this.NameLabel.Content = "None";
+				}
+			});
+		}
+
+		private void OnClicked(object sender, RoutedEventArgs e)
+		{
+			App.Services.Get<IViewService>().ShowDrawer<TargetSelectorView>("Selection", DrawerDirection.Left);
 		}
 	}
 }

@@ -33,6 +33,9 @@ namespace ConceptMatrix.GUI.Views
 		{
 			this.InitializeComponent();
 
+			if (DesignerProperties.GetIsInDesignMode(this))
+				return;
+
 			this.themeViewModel = new ThemeViewModel();
 			this.themeViewModel.Read(this.paletteHelper.GetTheme());
 			this.DataContext = this.themeViewModel;

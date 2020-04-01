@@ -82,10 +82,14 @@ namespace ConceptMatrix.GUI.Services
 
 		public IMemory<T> GetMemory<T>(BaseAddresses baseAddress, params string[] offsets)
 		{
-			List<string> newOffsets = new List<string>();
-			newOffsets.Add(this.GetBaseAddress(baseAddress.GetOffset(this.Offsets)));
-			newOffsets.AddRange(offsets);
+			return this.GetMemory<T>(baseAddress.GetOffset(this.Offsets), offsets);
+		}
 
+		public IMemory<T> GetMemory<T>(string baseAddress, params string[] offsets)
+		{
+			List<string> newOffsets = new List<string>();
+			newOffsets.Add(this.GetBaseAddress(baseAddress));
+			newOffsets.AddRange(offsets);
 			return this.GetMemory<T>(newOffsets.ToArray());
 		}
 

@@ -39,7 +39,7 @@
 
 		<Grid Margin="1">
 			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="150"/>
+				<ColumnDefinition Width="200"/>
 				<ColumnDefinition/>
 			</Grid.ColumnDefinitions>
 
@@ -49,6 +49,17 @@
 			</Grid.RowDefinitions>
 
 			<ContentPresenter Grid.Row="1" Grid.Column="1" x:Name="ViewArea"/>
+
+			<Grid Grid.Row="1">
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+					<RowDefinition/>
+				</Grid.RowDefinitions>
+
+				<views:TargetView Margin="10"/>
+
+				<ListBox Grid.Row="1" x:Name="ViewList" SelectionChanged="OnSelectionChanged"/>
+			</Grid>
 
 			<materialdesign:DrawerHost Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="DrawerHost">
 				<materialdesign:DrawerHost.RightDrawerContent>
@@ -101,17 +112,6 @@
 
 				</StackPanel>
 			</Border>
-
-			<Grid Grid.Row="1">
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto"/>
-					<RowDefinition/>
-				</Grid.RowDefinitions>
-
-				<views:TargetView/>
-
-				<ListBox Grid.Row="1" x:Name="ViewList" SelectionChanged="OnSelectionChanged"/>
-			</Grid>
 
 		</Grid>
 	</Grid>

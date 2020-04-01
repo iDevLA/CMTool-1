@@ -15,6 +15,7 @@ namespace ConceptMatrix.Offsets
 		Physics,
 		Physics2,
 		Camera,
+		GPoseEntity,
 	}
 
 	#pragma warning disable SA1649
@@ -32,6 +33,7 @@ namespace ConceptMatrix.Offsets
 				case BaseAddresses.Physics: return root.PhysicsOffset;
 				case BaseAddresses.Physics2: return root.PhysicsOffset2;
 				case BaseAddresses.Camera: return root.CameraOffset;
+				case BaseAddresses.GPoseEntity: return root.GposeEntityOffset;
 			}
 
 			throw new Exception($"Unrecognized base address offset: {address}");

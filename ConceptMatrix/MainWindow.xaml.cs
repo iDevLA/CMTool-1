@@ -7,6 +7,7 @@ namespace ConceptMatrix.GUI
 	using System.Reflection;
 	using System.Windows;
 	using System.Windows.Controls;
+	using System.Windows.Input;
 	using ConceptMatrix;
 	using ConceptMatrix.GUI.Services;
 
@@ -58,6 +59,36 @@ namespace ConceptMatrix.GUI
 			{
 				Log.Write(new Exception($"Failed to create view: {viewType}", ex));
 			}
+		}
+
+		private void OnTitleBarMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		{
+			if (e.ChangedButton == MouseButton.Left)
+			{
+				this.DragMove();
+			}
+		}
+
+		private void Window_Activated(object sender, EventArgs e)
+		{
+			this.ActiveBorder.Visibility = Visibility.Visible;
+			this.InActiveBorder.Visibility = Visibility.Collapsed;
+		}
+
+		private void Window_Deactivated(object sender, EventArgs e)
+		{
+			this.ActiveBorder.Visibility = Visibility.Collapsed;
+			this.InActiveBorder.Visibility = Visibility.Visible;
+		}
+
+		private void OnCloseClick(object sender, RoutedEventArgs e)
+		{
+			this.Close();
+		}
+
+		private void OnMinimiseClick(object sender, RoutedEventArgs e)
+		{
+			this.WindowState = WindowState.Minimized;
 		}
 	}
 }

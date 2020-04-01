@@ -30,7 +30,7 @@
 				<fa:ImageAwesome Icon="Times" Opacity="0.5"/>
 			</Button>
 
-			<metro:ProgressRing Foreground="{DynamicResource AccentColorBrush}"/>
+			<ProgressBar Style="{DynamicResource MaterialDesignCircularProgressBar}" IsIndeterminate="True" Width="100" Height="100"/>
 
 			<Label HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Content="Loading..." HorizontalContentAlignment="Center"/>
 		</Grid>

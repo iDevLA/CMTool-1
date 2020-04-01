@@ -54,7 +54,7 @@ namespace ConceptMatrix.GUI
 
 			if (parts.Length == 2)
 			{
-				this.StackTraceBlock.Inlines.Add(new Run(parts[0] + "\n") { ToolTip = parts[1] });
+				this.StackTraceBlock.Inlines.Add(new Run(parts[0] + "\n") { ToolTip = parts[1].Trim('\r', '\n') });
 			}
 			else
 			{

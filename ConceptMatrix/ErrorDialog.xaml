@@ -7,7 +7,7 @@
 		mc:Ignorable="d"
 		Title="Error" 
 		Height="130" 
-		Width="550" 
+		Width="650" 
 		WindowStartupLocation="CenterOwner"
 		WindowStyle="None"
 		ResizeMode="NoResize"
@@ -15,7 +15,12 @@
 		AllowsTransparency="True"
 		MouseDown="OnMouseDown">
 
-	<Border Background="{StaticResource MaterialDesignBackground}" Margin="10" CornerRadius="2">
+	<Border Background="{DynamicResource MaterialDesignCardBackground}"
+			BorderBrush="#DD2020"
+			BorderThickness="1"
+			CornerRadius="3"
+			Margin="10">
+		
 		<Border.Effect>
 			<DropShadowEffect ShadowDepth="0" BlurRadius="10" Opacity="0.5"/>
 		</Border.Effect>
@@ -23,7 +28,7 @@
 		<Grid Margin="3" x:Name="ContentArea">
 			<Grid.RowDefinitions>
 				<RowDefinition/>
-				<RowDefinition Height="32"/>
+				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
 
 			<Expander x:Name="DetailsExpander" 
@@ -35,13 +40,21 @@
 					  Margin="0, 10, 0, 0"
 					  Padding="0"
 					  VerticalAlignment="Stretch"
-					  VerticalContentAlignment="Stretch">
-				<ScrollViewer Style="{DynamicResource MaterialDesignScrollViewer}" Grid.Row="1" HorizontalScrollBarVisibility="Auto" VerticalAlignment="Stretch" Height="256">
-					<TextBlock x:Name="StackTraceBlock" TextWrapping="NoWrap" Style="{DynamicResource MaterialDesignBody1TextBlock}" VerticalAlignment="Stretch" Margin="10"/>
+					  VerticalContentAlignment="Stretch"
+					  Foreground="{DynamicResource MaterialDesignBody}">
+				
+				<ScrollViewer Style="{DynamicResource MetroScrollViewer}"
+							  Grid.Row="1"
+							  VerticalAlignment="Stretch"
+							  Height="216">
+					
+					<TextBlock x:Name="StackTraceBlock"
+							   Margin="10" 
+							   Foreground="{DynamicResource MaterialDesignBody}"/>
 				</ScrollViewer>
 			</Expander>
 
-			<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right">
+			<StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0, 10, 3, 3">
 				<Button Content="Quit" Width="75" Click="OnOkClick" Background="#DD2020" BorderBrush="#CC1010"/>
 			</StackPanel>
 

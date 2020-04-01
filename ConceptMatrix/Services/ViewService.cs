@@ -15,8 +15,10 @@ namespace ConceptMatrix.GUI.Services
 		private Dictionary<string, Type> views = new Dictionary<string, Type>();
 
 		public delegate void ViewEvent(string path);
+		public delegate void DrawerEvent(string title, Type drawerType, DrawerDirection direction);
 
 		public event ViewEvent AddingView;
+		public event DrawerEvent ShowingDrawer;
 
 		public IEnumerable<string> ViewPaths
 		{
@@ -62,6 +64,16 @@ namespace ConceptMatrix.GUI.Services
 				throw new Exception($"View not found for path: {path}");
 
 			return this.views[path];
+		}
+
+		public void ShowDrawer<T>(string title, DrawerDirection direction)
+		{
+			Type view = typeof(T);
+
+			if (!typeof(UserControl).IsAssignableFrom(view))
+				throw new Exception($"View: {view} does not extend from UserControl.");
+
+			this.ShowingDrawer?.Invoke(title, typeof(T), direction);
 		}
 	}
 }

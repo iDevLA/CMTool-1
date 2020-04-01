@@ -4,7 +4,7 @@
 		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:views="clr-namespace:ConceptMatrix.GUI.Views"
-		xmlns:fa="http://schemas.fontawesome.io/icons/"
+		xmlns:fa="http://schemas.fontawesome.io/icons/" xmlns:materialdesign="http://materialdesigninxaml.net/winfx/xaml/themes"
 		mc:Ignorable="d"
 		Title="MainWindow"
 		Height="670"
@@ -17,7 +17,7 @@
 		Deactivated="Window_Deactivated">
 
 	<Grid Margin="10">
-		<Border Background="{DynamicResource MaterialDesignBackground}"
+		<Border Background="{DynamicResource MaterialDesignCardBackground}"
 			BorderBrush="{DynamicResource PrimaryHueMidBrush}"
 			BorderThickness="1"
 			CornerRadius="3"
@@ -27,7 +27,7 @@
 			</Border.Effect>
 		</Border>
 
-		<Border Background="{DynamicResource MaterialDesignBackground}"
+		<Border Background="{DynamicResource MaterialDesignCardBackground}"
 			BorderBrush="LightGray"
 			BorderThickness="1"
 			CornerRadius="3"
@@ -50,7 +50,36 @@
 
 			<ContentPresenter Grid.Row="1" Grid.Column="1" x:Name="ViewArea"/>
 
-			<Border Background="{DynamicResource MaterialDesignBackground}" 
+			<materialdesign:DrawerHost Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" x:Name="DrawerHost">
+				<materialdesign:DrawerHost.RightDrawerContent>
+					<Grid Width="256"  Margin="12">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="1*" />
+						</Grid.RowDefinitions>
+						<Label Grid.Row="0" x:Name="RightTitle" Content="Hello World" FontSize="20" FontWeight="DemiBold"/>
+						<ContentPresenter Grid.Row="1" x:Name="DrawerRight"/>
+					</Grid>
+				</materialdesign:DrawerHost.RightDrawerContent>
+				<materialdesign:DrawerHost.LeftDrawerContent>
+					<Grid Width="256"  Margin="12">
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto" />
+							<RowDefinition Height="1*" />
+						</Grid.RowDefinitions>
+						<Label Grid.Row="0" x:Name="LeftTitle" Content="Hello World" FontSize="20" FontWeight="DemiBold"/>
+						<ContentPresenter Grid.Row="1" x:Name="DrawerLeft"/>
+					</Grid>
+				</materialdesign:DrawerHost.LeftDrawerContent>
+				<materialdesign:DrawerHost.TopDrawerContent>
+					<ContentPresenter Height="128" x:Name="DrawerTop" Margin="12"/>
+				</materialdesign:DrawerHost.TopDrawerContent>
+				<materialdesign:DrawerHost.BottomDrawerContent>
+					<ContentPresenter Height="128" x:Name="DrawerBottom" Margin="12"/>
+				</materialdesign:DrawerHost.BottomDrawerContent>
+			</materialdesign:DrawerHost>
+
+			<Border Background="{DynamicResource MaterialDesignCardBackground}" 
 				CornerRadius="2, 2, 0, 0"
 				Grid.ColumnSpan="2"
 				VerticalAlignment="Top"
@@ -58,12 +87,16 @@
 
 				<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
 
-					<Button Margin="3,0,3,0" Width="28" Height="28" Padding="8" Background="Transparent" Style="{StaticResource MetroWindowButtonStyle}" Click="OnMinimiseClick">
-						<fa:ImageAwesome Icon="WindowMinimize" Opacity="0.5"/>
+					<Button Margin="3,0,30,0" Width="28" Height="28" Padding="8" Background="Transparent" Click="OnThemeClick" BorderThickness="0">
+						<fa:ImageAwesome Icon="PaintBrush" Opacity="0.35"/>
 					</Button>
 
-					<Button Margin="3,0,3,0" Width="28" Height="28" Padding="8" Background="Transparent" Style="{StaticResource MetroWindowButtonStyle}" Click="OnCloseClick">
-						<fa:ImageAwesome Icon="Times" Opacity="0.5"/>
+					<Button Margin="3,0,3,0" Width="28" Height="28" Padding="8" Background="Transparent" BorderThickness="0" Click="OnMinimiseClick">
+						<fa:ImageAwesome Icon="WindowMinimize" Opacity="0.35"/>
+					</Button>
+
+					<Button Margin="3,0,3,0" Width="28" Height="28" Padding="8" Background="Transparent" BorderThickness="0" Click="OnCloseClick">
+						<fa:ImageAwesome Icon="Times" Opacity="0.35"/>
 					</Button>
 
 				</StackPanel>

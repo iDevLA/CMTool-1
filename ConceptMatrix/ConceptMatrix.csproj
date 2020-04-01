@@ -133,6 +133,9 @@
     <Compile Include="Views\TargetView.xaml.cs">
       <DependentUpon>TargetView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\ThemeSettingsView.xaml.cs">
+      <DependentUpon>ThemeSettingsView.xaml</DependentUpon>
+    </Compile>
     <Page Include="ErrorDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -156,6 +159,10 @@
     <Page Include="Views\TargetView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ThemeSettingsView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
   </ItemGroup>
   <ItemGroup>
